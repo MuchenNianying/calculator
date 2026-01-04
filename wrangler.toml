@@ -1,0 +1,9 @@
+name = "calculator"
+# 指向Worker入口文件
+main = "src/index.js"
+compatibility_date = "2025-12-31"
+
+# Rules for importing HTML file
+[[rules]]
+type = "Text"
+globs= ["**/*.html"]
