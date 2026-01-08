@@ -1,4 +1,8 @@
 import indexHtml from '../index.html';
+import styleCss from '../style.css';
+import scriptJs from '../script.js';
+import adsTxt from './ads.txt';
+
 
 export default {
     async fetch(request, env) {
@@ -23,8 +27,32 @@ export default {
             // Serve HTML page
             if (path === '/' || path === '/index.html') {
                 return new Response(indexHtml, {
+                headers: {
+                    'Content-Type': 'text/html;charset=UTF-8',
+                },
+            });
+        }
+        // Serve CSS file
+        if (path === '/style.css') {
+            return new Response(styleCss, {
+                headers: {
+                    'Content-Type': 'text/css',
+                },
+            });
+        }
+        // Serve JavaScript file
+        if (path === '/script.js') {
+            return new Response(scriptJs, {
+                headers: {
+                    'Content-Type': 'application/javascript',
+                },
+            });
+        }
+            // Serve ads.txt file
+            if (path === '/ads.txt') {
+                return new Response(adsTxt, {
                     headers: {
-                        'Content-Type': 'text/html;charset=UTF-8',
+                        'Content-Type': 'text/plain',
                     },
                 });
             }

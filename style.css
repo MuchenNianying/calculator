@@ -1,0 +1,485 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.nav-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.nav-tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    border: none;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-tab.active {
+    background: #667eea;
+    color: white;
+}
+
+.nav-tab:hover:not(.active) {
+    background: #e9ecef;
+}
+
+.calculator-section {
+    display: none;
+    padding: 30px;
+    min-height: 500px;
+}
+
+.calculator-section.active {
+    display: block;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+}
+
+.input-group input, .input-group select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus, .input-group select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: transform 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.result {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.grid-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.grid-buttons button {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    height: 60px;
+}
+
+.grid-buttons button:hover {
+    background: #667eea;
+    color: white;
+}
+
+.scientific-buttons {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.scientific-buttons button {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    height: 50px;
+}
+
+.scientific-buttons button:hover {
+    background: #667eea;
+    color: white;
+}
+
+.converter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.converter-item {
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    background: #f9f9f9;
+}
+
+.converter-item h3 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.mortgage-calculator {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.tax-calculator {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.mortgage-schedule {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.mortgage-schedule h3 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.2em;
+}
+
+.schedule-controls {
+    margin-bottom: 15px;
+}
+
+.schedule-content {
+    overflow-x: auto;
+    margin-top: 15px;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.schedule-table th,
+.schedule-table td {
+    padding: 12px 10px;
+    text-align: right;
+    border-bottom: 1px solid #eee;
+}
+
+.schedule-table th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.schedule-table tr:hover {
+    background: #f5f5f5;
+}
+
+.schedule-table tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+.schedule-table tr:nth-child(even):hover {
+    background: #f0f0f0;
+}
+
+.binary-converter {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.bmi-calculator {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.tax-deduction-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+.tax-deduction-item input[type="checkbox"] {
+    margin-right: 10px;
+    margin-left: 0;
+    width: auto;
+    flex-shrink: 0;
+}
+
+.tax-deduction-item input[type="number"] {
+    width: 100px;
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+.tax-deduction-item label {
+    margin-bottom: 0;
+    margin-right: auto;
+}
+
+.currency-loading {
+    text-align: center;
+    padding: 10px;
+    color: #666;
+}
+
+.tax-options {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.tax-option {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tax-option.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.tax-notes {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border-left: 4px solid #28a745;
+}
+
+.tax-notes h3 {
+    color: #28a745;
+    margin-bottom: 10px;
+}
+
+.tax-notes table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+
+.tax-notes table th, .tax-notes table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.tax-notes table th {
+    background-color: #f2f2f2;
+}
+
+.deduction-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.deduction-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.insurance-inputs {
+    margin-top: 20px;
+}
+
+.insurance-inputs .deduction-grid {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+/* 调整专项附加扣除和五险一金扣除的input-group样式 */
+.deduction-row .input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #f9f9fa;
+}
+
+.deduction-row .input-group input[type="checkbox"] {
+    margin-right: 5px;
+    margin-left: 0;
+    width: auto;
+    flex-shrink: 0;
+}
+
+.deduction-row .input-group label {
+    margin-bottom: 0;
+    font-weight: 500;
+    flex-grow: 1;
+    cursor: pointer;
+}
+
+.deduction-row .input-group input[type="number"] {
+    width: 100px;
+    padding: 8px;
+    flex-shrink: 0;
+}
+
+/* 搜索可选择的下拉菜单样式 */
+.searchable-select {
+    position: relative;
+    width: 100%;
+}
+
+.search-select-input {
+    width: 100%;
+    padding: 10px 35px 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #fff;
+    cursor: pointer;
+    box-sizing: border-box;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.search-select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.dropdown-search {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.dropdown-search input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.dropdown-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdown-item.selected {
+    background-color: #e8f0fe;
+    color: #667eea;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .nav-tabs {
+        flex-direction: column;
+    }
+
+    .grid-buttons {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .scientific-buttons {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .converter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tax-options {
+        flex-direction: column;
+    }
+
+    .deduction-row {
+        grid-template-columns: 1fr;
+    }
+}

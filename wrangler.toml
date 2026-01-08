@@ -1,9 +1,12 @@
 name = "calculator"
 # 指向Worker入口文件
 main = "src/index.js"
-compatibility_date = "2025-12-31"
+# 使用当前Wrangler版本支持的最新兼容性日期
+compatibility_date = "2025-12-17"
 
-# Rules for importing HTML file
+# Rules for importing static files
 [[rules]]
 type = "Text"
-globs= ["**/*.html"]
+globs= ["**/*.html", "**/*.css", "**/*.js", "**/*.txt"]
+# 添加fallthrough选项以允许默认规则继续生效
+fallthrough = true
