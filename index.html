@@ -23,6 +23,11 @@
         <button class="nav-tab" onclick="showSection('advanced')">程序员工具</button>
         <button class="nav-tab" onclick="showSection('bmi')">BMI计算器</button>
     </div>
+    
+    <!-- 顶部广告位 -->
+    <div class="adsense-ad ad-top">
+        <!-- AdSense广告代码将放置在此处 -->
+    </div>
 
     <div id="tax" class="calculator-section tax-calculator active">
         <h2>个税计算</h2>
@@ -193,6 +198,11 @@
 
         <button class="btn" onclick="calculateTax()">计算个税</button>
         <div id="taxResult" class="result" style="display: none;"></div>
+        
+        <!-- 个税计算结果下方广告位 -->
+        <div class="adsense-ad ad-tax-result">
+            <!-- AdSense广告代码将放置在此处 -->
+        </div>
 
         <!-- 工资薪金页面备注信息 -->
         <div id="salaryNotes" class="tax-notes">
@@ -343,6 +353,11 @@
         </div>
         <button class="btn" onclick="calculateMortgage()">计算</button>
         <div id="mortgageResult" class="result" style="display: none;"></div>
+        
+        <!-- 房贷计算结果下方广告位 -->
+        <div class="adsense-ad ad-mortgage-result">
+            <!-- AdSense广告代码将放置在此处 -->
+        </div>
         <div id="mortgageSchedule" class="mortgage-schedule" style="display: none;">
             <h3>还款计划明细</h3>
             <div class="schedule-controls">
@@ -362,6 +377,22 @@
                     <tbody id="scheduleBody"></tbody>
                 </table>
             </div>
+        </div>
+        <div class="module-description">
+            <h3>房贷计算功能说明</h3>
+            <p>本工具支持等额本息和等额本金两种常见还款方式的计算，帮助用户预估每月还款金额、总利息支出以及详细的还款计划。计算结果仅供参考，实际还款金额以银行审批为准。</p>
+            
+            <h4>还款方式比较</h4>
+            <p><strong>等额本息：</strong>每月还款额固定，前期利息占比较高，本金占比较低；随着还款期限推进，利息占比逐渐降低，本金占比逐渐升高。这种方式适合收入稳定、希望每月还款压力均衡的购房者。</p>
+            <p><strong>等额本金：</strong>每月还款本金固定，利息逐月递减，因此每月总还款额呈递减趋势。前期还款压力较大，但总利息支出较等额本息少，适合前期还款能力较强、希望减少总利息支出的购房者。</p>
+            
+            <h4>计算注意事项</h4>
+            <ul>
+                <li>贷款总额：指实际贷款金额，单位为万元（如贷款100万则输入100）</li>
+                <li>年利率：请输入银行实际执行的贷款利率，一般为基准利率上下浮动</li>
+                <li>贷款年限：最长不超过30年，不同银行和贷款类型可能有不同限制</li>
+                <li>计算结果仅供参考，实际还款金额可能因银行政策、还款方式调整等因素有所不同</li>
+            </ul>
         </div>
     </div>
 
@@ -388,6 +419,25 @@
         <button class="btn" onclick="convertCurrency()">转换</button>
         <div id="currencyResult" class="result" style="display: none;"></div>
         <div id="currencyLoading" class="currency-loading" style="display: none;">加载汇率数据中...</div>
+        <div class="module-description">
+            <h3>汇率转换功能说明</h3>
+            <p>本工具提供实时货币汇率转换服务，支持全球多种主要货币之间的快速转换，帮助用户了解不同货币之间的兑换比率，适用于旅行、国际贸易、跨境电商等场景。</p>
+            
+            <h4>使用方法</h4>
+            <ul>
+                <li>输入要转换的货币金额</li>
+                <li>选择原始货币（从哪个货币转换）</li>
+                <li>选择目标货币（转换为哪个货币）</li>
+                <li>点击转换按钮获取实时转换结果</li>
+            </ul>
+            
+            <h4>注意事项</h4>
+            <ul>
+                <li>汇率数据可能会实时更新，具体以实际交易时的汇率为准</li>
+                <li>本工具提供的汇率仅供参考，不构成任何交易建议</li>
+                <li>实际兑换时可能会产生手续费、佣金等额外费用，具体以金融机构规定为准</li>
+            </ul>
+        </div>
     </div>
 
     <div id="chineseNumber" class="calculator-section">
@@ -398,6 +448,26 @@
         </div>
         <button class="btn" onclick="convertToChineseNumber()">转换为大写</button>
         <div id="chineseNumberResult" class="result" style="display: none;"></div>
+        <div class="module-description">
+            <h3>大写数字转换功能说明</h3>
+            <p>本工具将阿拉伯数字转换为中文大写数字，适用于财务、会计、合同、发票等正式场合，确保数字表述的准确性和规范性，避免篡改和误解。</p>
+            
+            <h4>适用场景</h4>
+            <ul>
+                <li>财务凭证和发票的金额大写填写</li>
+                <li>合同和法律文件中的金额表述</li>
+                <li>银行支票和汇票的填写</li>
+                <li>其他需要正式、规范数字表述的场合</li>
+            </ul>
+            
+            <h4>转换规则</h4>
+            <ul>
+                <li>支持整数和小数转换，小数部分转换为"角"和"分"</li>
+                <li>自动处理零的正确使用（如连续零只写一个零）</li>
+                <li>整数部分超过万位时自动添加"万"、"亿"等单位</li>
+                <li>金额为整数时自动添加"整"字结尾</li>
+            </ul>
+        </div>
     </div>
 
     <div id="conversions" class="calculator-section">
@@ -660,6 +730,29 @@
                 <div id="powerResult" class="result" style="display: none;"></div>
             </div>
         </div>
+        <div class="module-description">
+            <h3>单位转换功能说明</h3>
+            <p>本工具提供多种常用物理量的单位转换功能，支持国际单位制（SI）和英美制单位之间的快速转换，适用于日常生活、学习和工作中的各种场景。</p>
+            
+            <h4>转换类别说明</h4>
+            <p><strong>长度转换：</strong>支持毫米、厘米、米、千米、英寸、英尺、码、英里等长度单位的转换，适用于测量、建筑、旅行等场景。</p>
+            <p><strong>面积转换：</strong>支持平方米、平方厘米、平方千米、英亩、公顷、平方英尺、平方英寸等面积单位的转换，适用于房地产、土地测量、工程设计等场景。</p>
+            <p><strong>体积转换：</strong>支持毫升、升、立方米、加仑、品脱、夸脱等体积单位的转换，适用于烹饪、液体测量、容器设计等场景。</p>
+            <p><strong>重量转换：</strong>支持克、千克、吨、磅、盎司、英石等重量单位的转换，适用于贸易、烹饪、物流等场景。</p>
+            <p><strong>温度转换：</strong>支持摄氏度、华氏度、开尔文等温度单位的转换，适用于气象、烹饪、科学研究等场景。</p>
+            <p><strong>压强转换：</strong>支持帕斯卡、千帕、兆帕、巴、磅/平方英寸、标准大气压等压强单位的转换，适用于工程、气象、科学研究等场景。</p>
+            <p><strong>时间转换：</strong>支持毫秒、秒、分钟、小时、天、周、月、年等时间单位的转换，适用于时间管理、项目规划、科学研究等场景。</p>
+            <p><strong>速度转换：</strong>支持米/秒、千米/小时、英里/小时、节等速度单位的转换，适用于交通、运动、航空航海等场景。</p>
+            <p><strong>功率转换：</strong>支持瓦特、千瓦、马力、公制马力等功率单位的转换，适用于工程、机械、能源等场景。</p>
+            
+            <h4>使用方法</h4>
+            <ul>
+                <li>选择需要转换的物理量类别（如长度、重量等）</li>
+                <li>输入要转换的数值</li>
+                <li>选择原始单位和目标单位</li>
+                <li>点击转换按钮获取结果</li>
+            </ul>
+        </div>
     </div>
 
     <div id="advanced" class="calculator-section">
@@ -723,6 +816,22 @@
                 <div id="dataResult" class="result" style="display: none;"></div>
             </div>
         </div>
+        <div class="module-description">
+            <h3>程序员工具功能说明</h3>
+            <p>本工具集合了程序员在日常开发中常用的转换功能，帮助开发者提高工作效率，减少手动计算和转换的错误。</p>
+            
+            <h4>工具类别说明</h4>
+            <p><strong>进制转换：</strong>支持二进制、八进制、十进制、十六进制之间的相互转换，适用于编程、硬件开发、数据处理等场景。</p>
+            <p><strong>数据转换：</strong>支持字节、千字节、兆字节、吉字节、太字节、拍字节等数据存储单位的转换，适用于文件大小计算、存储容量规划等场景。</p>
+            
+            <h4>使用方法</h4>
+            <ul>
+                <li>选择需要的工具类别（如进制转换、数据转换）</li>
+                <li>输入要转换的数值或数据</li>
+                <li>选择转换的源格式和目标格式</li>
+                <li>点击转换按钮获取结果</li>
+            </ul>
+        </div>
     </div>
 
     <div id="bmi" class="calculator-section bmi-calculator">
@@ -737,6 +846,29 @@
         </div>
         <button class="btn" onclick="calculateBMI()">计算BMI</button>
         <div id="bmiResult" class="result" style="display: none;"></div>
+        <div class="module-description">
+            <h3>BMI计算功能说明</h3>
+            <p>BMI（Body Mass Index，身体质量指数）是国际上常用的衡量人体胖瘦程度以及是否健康的一个标准。本工具通过身高和体重数据计算BMI值，并提供相应的健康评估建议。</p>
+            
+            <h4>计算公式</h4>
+            <p>BMI = 体重(kg) ÷ 身高(m)的平方</p>
+            
+            <h4>BMI标准范围</h4>
+            <ul>
+                <li>偏瘦：BMI &lt; 18.5</li>
+                <li>正常：18.5 ≤ BMI &lt; 24</li>
+                <li>超重：24 ≤ BMI &lt; 28</li>
+                <li>肥胖：BMI ≥ 28</li>
+            </ul>
+            
+            <h4>注意事项</h4>
+            <ul>
+                <li>BMI是一个参考指标，不能完全代表健康状况</li>
+                <li>运动员、孕妇、老年人等特殊人群可能不适用BMI标准</li>
+                <li>如需更准确的健康评估，建议咨询专业医生</li>
+                <li>保持健康的体重需要结合合理饮食和适量运动</li>
+            </ul>
+        </div>
     </div>
 </div>
 
