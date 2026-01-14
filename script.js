@@ -470,129 +470,575 @@ function convertCurrency() {
 
 // 全局变量存储还款计划
 let mortgageScheduleData = [];
+let commercialScheduleData = [];
+let providentScheduleData = [];
+let currentLoanType = '';
 
 // 显示/隐藏还款计划
-function toggleSchedule() {
-    const scheduleContent = document.getElementById('scheduleContent');
-    scheduleContent.style.display = scheduleContent.style.display === 'none' ? 'block' : 'none';
-}
-
-// 渲染还款计划表格
-function renderSchedule() {
-    const tbody = document.getElementById('scheduleBody');
-    tbody.innerHTML = '';
-
-    mortgageScheduleData.forEach(row => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${row.month}</td>
-            <td>¥${row.payment.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
-            <td>¥${row.principal.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
-            <td>¥${row.interest.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
-            <td>¥${row.remaining.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-
-    document.getElementById('mortgageSchedule').style.display = 'block';
-}
-
 // 房贷计算功能
-function calculateMortgage() {
-    const loanAmount = parseFloat(document.getElementById('loanAmount').value);
-    const annualRate = parseFloat(document.getElementById('interestRate').value);
-    const loanYears = parseInt(document.getElementById('loanYears').value);
-    const repaymentType = document.getElementById('repaymentType').value;
+function switchLoanType(type) {
+    const options = document.querySelectorAll('.loan-type-option');
+    options.forEach(opt => opt.classList.remove('active'));
+    
+    const activeOption = document.querySelector(`.loan-type-option[onclick="switchLoanType('${type}')"]`);
+    if (activeOption) {
+        activeOption.classList.add('active');
+    }
+    
+    document.getElementById('commercialLoan').style.display = type === 'commercial' ? 'block' : 'none';
+    document.getElementById('providentLoan').style.display = type === 'provident' ? 'block' : 'none';
+    document.getElementById('combinationLoan').style.display = type === 'combination' ? 'block' : 'none';
+    document.getElementById('commonLoanInputs').style.display = type === 'combination' ? 'none' : 'block';
+    
+    document.getElementById('mortgageResult').innerHTML = `
+        <h3>计算结果</h3>
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>项目</th>
+                    <th>数值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>贷款总额</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>贷款类型</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>还款方式</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>月供</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>还款总额</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>支付利息</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>还款月数</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+    document.getElementById('scheduleBtn').disabled = true;
+}
 
-    // 输入验证
-    if (isNaN(loanAmount) || loanAmount <= 0) {
-        alert('请输入有效的贷款金额');
-        return;
+function calculateMortgage() {
+    const loanType = document.querySelector('.loan-type-option.active').getAttribute('onclick').match(/switchLoanType\('(.+?)'\)/)[1];
+    currentLoanType = loanType;
+    let loanYears, repaymentType;
+    
+    // 根据贷款类型获取对应的年限和还款方式
+    if (loanType === 'combination') {
+        const commercialYears = parseInt(document.getElementById('commercialYears').value);
+        const providentYears = parseInt(document.getElementById('providentYears').value);
+        const commercialRepaymentType = document.getElementById('commercialRepaymentType').value;
+        const providentRepaymentType = document.getElementById('providentRepaymentType').value;
+        
+        if (isNaN(commercialYears) || commercialYears <= 0 || commercialYears > 30) {
+            alert('请输入有效的商业贷款年限（1-30年）');
+            return;
+        }
+        if (isNaN(providentYears) || providentYears <= 0 || providentYears > 30) {
+            alert('请输入有效的公积金贷款年限（1-30年）');
+            return;
+        }
+        
+        // 组合贷款使用较长的年限作为计算基础
+        loanYears = Math.max(commercialYears, providentYears);
+        repaymentType = null;
+    } else {
+        loanYears = parseInt(document.getElementById('loanYears').value);
+        repaymentType = document.getElementById('repaymentType').value;
+        
+        if (isNaN(loanYears) || loanYears <= 0 || loanYears > 30) {
+            alert('请输入有效的贷款年限（1-30年）');
+            return;
+        }
     }
-    if (isNaN(annualRate) || annualRate <= 0) {
-        alert('请输入有效的年利率');
-        return;
+
+    let loanAmountTotal, monthlyRate, totalMonths;
+    let commercialLoanAmount = 0, commercialMonthlyRate = 0;
+    let providentLoanAmount = 0, providentMonthlyRate = 0;
+
+    if (loanType === 'commercial') {
+        const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+        const annualRate = parseFloat(document.getElementById('interestRate').value);
+
+        if (isNaN(loanAmount) || loanAmount <= 0) {
+            alert('请输入有效的贷款金额');
+            return;
+        }
+        if (isNaN(annualRate) || annualRate <= 0) {
+            alert('请输入有效的年利率');
+            return;
+        }
+
+        loanAmountTotal = loanAmount * 10000;
+        monthlyRate = annualRate / 100 / 12;
+    } else if (loanType === 'provident') {
+        const providentAmount = parseFloat(document.getElementById('providentAmount').value);
+        const providentRate = parseFloat(document.getElementById('providentRate').value);
+
+        if (isNaN(providentAmount) || providentAmount <= 0) {
+            alert('请输入有效的公积金贷款金额');
+            return;
+        }
+        if (isNaN(providentRate) || providentRate <= 0) {
+            alert('请输入有效的公积金年利率');
+            return;
+        }
+
+        loanAmountTotal = providentAmount * 10000;
+        monthlyRate = providentRate / 100 / 12;
+    } else if (loanType === 'combination') {
+        commercialLoanAmount = parseFloat(document.getElementById('commercialAmount').value);
+        commercialMonthlyRate = parseFloat(document.getElementById('commercialRate').value) / 100 / 12;
+        providentLoanAmount = parseFloat(document.getElementById('providentAmountComb').value);
+        providentMonthlyRate = parseFloat(document.getElementById('providentRateComb').value) / 100 / 12;
+
+        if (isNaN(commercialLoanAmount) || commercialLoanAmount <= 0) {
+            alert('请输入有效的商业贷款金额');
+            return;
+        }
+        if (isNaN(providentLoanAmount) || providentLoanAmount <= 0) {
+            alert('请输入有效的公积金贷款金额');
+            return;
+        }
+        if (isNaN(commercialMonthlyRate) || commercialMonthlyRate <= 0) {
+            alert('请输入有效的商业贷款年利率');
+            return;
+        }
+        if (isNaN(providentMonthlyRate) || providentMonthlyRate <= 0) {
+            alert('请输入有效的公积金贷款年利率');
+            return;
+        }
+
+        loanAmountTotal = (commercialLoanAmount + providentLoanAmount) * 10000;
+        monthlyRate = null;
     }
+
     if (isNaN(loanYears) || loanYears <= 0 || loanYears > 30) {
         alert('请输入有效的贷款年限（1-30年）');
         return;
     }
 
-    const loanAmountTotal = loanAmount * 10000; // 转换为元
-    const monthlyRate = annualRate / 100 / 12;
-    const totalMonths = loanYears * 12;
+    totalMonths = loanYears * 12;
 
     let monthlyPayment, totalPayment, totalInterest;
+    let resultHTML = '';
 
-    if (repaymentType === 'equal') {
-        // 等额本息计算
-        monthlyPayment = (loanAmountTotal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) /
-            (Math.pow(1 + monthlyRate, totalMonths) - 1);
-        totalPayment = monthlyPayment * totalMonths;
-
-        // 生成每月还款明细
+    if (loanType === 'combination') {
+        const commercialYears = parseInt(document.getElementById('commercialYears').value);
+        const providentYears = parseInt(document.getElementById('providentYears').value);
+        const commercialTotalMonths = commercialYears * 12;
+        const providentTotalMonths = providentYears * 12;
+        
+        let commercialMonthlyPayment, commercialTotalPayment, commercialTotalInterest;
+        let providentMonthlyPayment, providentTotalPayment, providentTotalInterest;
+        commercialScheduleData = [];
+        providentScheduleData = [];
+        
+        // 计算商业贷款
+        if (commercialRepaymentType === 'equal') {
+            commercialMonthlyPayment = (commercialLoanAmount * 10000 * commercialMonthlyRate * Math.pow(1 + commercialMonthlyRate, commercialTotalMonths)) /
+                (Math.pow(1 + commercialMonthlyRate, commercialTotalMonths) - 1);
+            commercialTotalPayment = commercialMonthlyPayment * commercialTotalMonths;
+            commercialTotalInterest = commercialTotalPayment - (commercialLoanAmount * 10000);
+            
+            let commercialRemaining = commercialLoanAmount * 10000;
+            for (let i = 1; i <= commercialTotalMonths; i++) {
+                const commercialInterest = commercialRemaining * commercialMonthlyRate;
+                const commercialPrincipal = commercialMonthlyPayment - commercialInterest;
+                commercialRemaining -= commercialPrincipal;
+                if (commercialRemaining < 0) commercialRemaining = 0;
+                
+                commercialScheduleData.push({
+                    month: i,
+                    payment: commercialMonthlyPayment,
+                    principal: commercialPrincipal,
+                    interest: commercialInterest,
+                    remaining: commercialRemaining
+                });
+            }
+        } else {
+            const commercialPrincipalPerMonth = (commercialLoanAmount * 10000) / commercialTotalMonths;
+            commercialTotalPayment = 0;
+            let commercialRemaining = commercialLoanAmount * 10000;
+            
+            for (let i = 1; i <= commercialTotalMonths; i++) {
+                const commercialInterest = commercialRemaining * commercialMonthlyRate;
+                const commercialPayment = commercialPrincipalPerMonth + commercialInterest;
+                commercialTotalPayment += commercialPayment;
+                commercialRemaining -= commercialPrincipalPerMonth;
+                if (commercialRemaining < 0) commercialRemaining = 0;
+                
+                commercialScheduleData.push({
+                    month: i,
+                    payment: commercialPayment,
+                    principal: commercialPrincipalPerMonth,
+                    interest: commercialInterest,
+                    remaining: commercialRemaining
+                });
+            }
+            commercialMonthlyPayment = commercialTotalPayment / commercialTotalMonths;
+            commercialTotalInterest = commercialTotalPayment - (commercialLoanAmount * 10000);
+        }
+        
+        // 计算公积金贷款
+        if (providentRepaymentType === 'equal') {
+            providentMonthlyPayment = (providentLoanAmount * 10000 * providentMonthlyRate * Math.pow(1 + providentMonthlyRate, providentTotalMonths)) /
+                (Math.pow(1 + providentMonthlyRate, providentTotalMonths) - 1);
+            providentTotalPayment = providentMonthlyPayment * providentTotalMonths;
+            providentTotalInterest = providentTotalPayment - (providentLoanAmount * 10000);
+            
+            let providentRemaining = providentLoanAmount * 10000;
+            for (let i = 1; i <= providentTotalMonths; i++) {
+                const providentInterest = providentRemaining * providentMonthlyRate;
+                const providentPrincipal = providentMonthlyPayment - providentInterest;
+                providentRemaining -= providentPrincipal;
+                if (providentRemaining < 0) providentRemaining = 0;
+                
+                providentScheduleData.push({
+                    month: i,
+                    payment: providentMonthlyPayment,
+                    principal: providentPrincipal,
+                    interest: providentInterest,
+                    remaining: providentRemaining
+                });
+            }
+        } else {
+            const providentPrincipalPerMonth = (providentLoanAmount * 10000) / providentTotalMonths;
+            providentTotalPayment = 0;
+            let providentRemaining = providentLoanAmount * 10000;
+            
+            for (let i = 1; i <= providentTotalMonths; i++) {
+                const providentInterest = providentRemaining * providentMonthlyRate;
+                const providentPayment = providentPrincipalPerMonth + providentInterest;
+                providentTotalPayment += providentPayment;
+                providentRemaining -= providentPrincipalPerMonth;
+                if (providentRemaining < 0) providentRemaining = 0;
+                
+                providentScheduleData.push({
+                    month: i,
+                    payment: providentPayment,
+                    principal: providentPrincipalPerMonth,
+                    interest: providentInterest,
+                    remaining: providentRemaining
+                });
+            }
+            providentMonthlyPayment = providentTotalPayment / providentTotalMonths;
+            providentTotalInterest = providentTotalPayment - (providentLoanAmount * 10000);
+        }
+        
+        // 计算合计
+        loanAmountTotal = (commercialLoanAmount + providentLoanAmount) * 10000;
+        monthlyPayment = commercialMonthlyPayment + providentMonthlyPayment;
+        totalPayment = commercialTotalPayment + providentTotalPayment;
+        totalInterest = commercialTotalInterest + providentTotalInterest;
+        
+        // 合并还款计划数据
         mortgageScheduleData = [];
-        let remainingPrincipal = loanAmountTotal;
-        for (let i = 1; i <= totalMonths; i++) {
-            const interestPayment = remainingPrincipal * monthlyRate;
-            const principalPayment = monthlyPayment - interestPayment;
-            remainingPrincipal -= principalPayment;
-            if (remainingPrincipal < 0) remainingPrincipal = 0;
-
+        const maxMonths = Math.max(commercialTotalMonths, providentTotalMonths);
+        for (let i = 1; i <= maxMonths; i++) {
+            const commercialData = commercialScheduleData[i - 1] || { payment: 0, principal: 0, interest: 0, remaining: 0 };
+            const providentData = providentScheduleData[i - 1] || { payment: 0, principal: 0, interest: 0, remaining: 0 };
+            
             mortgageScheduleData.push({
                 month: i,
-                payment: monthlyPayment,
-                principal: principalPayment,
-                interest: interestPayment,
-                remaining: remainingPrincipal
+                payment: commercialData.payment + providentData.payment,
+                principal: commercialData.principal + providentData.principal,
+                interest: commercialData.interest + providentData.interest,
+                remaining: commercialData.remaining + providentData.remaining
             });
         }
-    } else {
-        // 等额本金计算
-        const principalPerMonth = loanAmountTotal / totalMonths;
-        let totalPaymentTemp = 0;
-        mortgageScheduleData = [];
-        let remainingPrincipal = loanAmountTotal;
-
-        for (let i = 1; i <= totalMonths; i++) {
-            const interestThisMonth = remainingPrincipal * monthlyRate;
-            const paymentThisMonth = principalPerMonth + interestThisMonth;
-            totalPaymentTemp += paymentThisMonth;
-            remainingPrincipal -= principalPerMonth;
-            if (remainingPrincipal < 0) remainingPrincipal = 0;
-
-            mortgageScheduleData.push({
-                month: i,
-                payment: paymentThisMonth,
-                principal: principalPerMonth,
-                interest: interestThisMonth,
-                remaining: remainingPrincipal
-            });
-        }
-        totalPayment = totalPaymentTemp;
-        monthlyPayment = totalPayment / totalMonths; // 平均月供
-    }
-
-    totalInterest = totalPayment - loanAmountTotal;
-
-    let firstMonthInterest = '';
-    if (repaymentType === 'equal' && mortgageScheduleData.length > 0) {
-        firstMonthInterest = `<p><strong>首月利息:</strong> ¥${mortgageScheduleData[0].interest.toLocaleString(undefined, {maximumFractionDigits: 2})}（逐月递减）</p>`;
-    }
-
-    // 渲染结果和还款计划
-    document.getElementById('mortgageResult').innerHTML = `
-            <h3>计算结果</h3>
-            <p><strong>贷款总额:</strong> ¥${loanAmountTotal.toLocaleString()}</p>
-            <p><strong>还款方式:</strong> ${repaymentType === 'equal' ? '等额本息' : '等额本金'}</p>
-            <p><strong>月供:</strong> ¥${monthlyPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
-            <p><strong>还款总额:</strong> ¥${totalPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
-            <p><strong>支付利息:</strong> ¥${totalInterest.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
-            <p><strong>还款月数:</strong> ${totalMonths} 个月</p>
-            ${firstMonthInterest}
+        
+        resultHTML = `
+            <h3>组合贷款计算结果</h3>
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>项目</th>
+                        <th>数值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>贷款总额</td>
+                        <td>¥${loanAmountTotal.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>还款方式</td>
+                        <td>商业贷款：${commercialRepaymentType === 'equal' ? '等额本息' : '等额本金'}，公积金贷款：${providentRepaymentType === 'equal' ? '等额本息' : '等额本金'}</td>
+                    </tr>
+                    <tr>
+                        <td>月供</td>
+                        <td>¥${monthlyPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>还款总额</td>
+                        <td>¥${totalPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>支付利息</td>
+                        <td>¥${totalInterest.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>商业贷款明细</h3>
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>项目</th>
+                        <th>数值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>商业贷款金额</td>
+                        <td>¥${(commercialLoanAmount * 10000).toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>商业贷款年利率</td>
+                        <td>${(commercialMonthlyRate * 12 * 100).toFixed(2)}%</td>
+                    </tr>
+                    <tr>
+                        <td>商业贷款年限</td>
+                        <td>${commercialYears} 年</td>
+                    </tr>
+                    <tr>
+                        <td>商业贷款还款方式</td>
+                        <td>${commercialRepaymentType === 'equal' ? '等额本息' : '等额本金'}</td>
+                    </tr>
+                    <tr>
+                        <td>商业贷款月供</td>
+                        <td>¥${commercialMonthlyPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>商业贷款还款总额</td>
+                        <td>¥${commercialTotalPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>商业贷款支付利息</td>
+                        <td>¥${commercialTotalInterest.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>公积金贷款明细</h3>
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>项目</th>
+                        <th>数值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>公积金贷款金额</td>
+                        <td>¥${(providentLoanAmount * 10000).toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>公积金贷款年利率</td>
+                        <td>${(providentMonthlyRate * 12 * 100).toFixed(2)}%</td>
+                    </tr>
+                    <tr>
+                        <td>公积金贷款年限</td>
+                        <td>${providentYears} 年</td>
+                    </tr>
+                    <tr>
+                        <td>公积金贷款还款方式</td>
+                        <td>${providentRepaymentType === 'equal' ? '等额本息' : '等额本金'}</td>
+                    </tr>
+                    <tr>
+                        <td>公积金贷款月供</td>
+                        <td>¥${providentMonthlyPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>公积金贷款还款总额</td>
+                        <td>¥${providentTotalPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>公积金贷款支付利息</td>
+                        <td>¥${providentTotalInterest.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                </tbody>
+            </table>
         `;
-    document.getElementById('mortgageResult').style.display = 'block';
-    renderSchedule();
+    } else {
+        if (repaymentType === 'equal') {
+            monthlyPayment = (loanAmountTotal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) /
+                (Math.pow(1 + monthlyRate, totalMonths) - 1);
+            totalPayment = monthlyPayment * totalMonths;
+
+            mortgageScheduleData = [];
+            let remainingPrincipal = loanAmountTotal;
+            for (let i = 1; i <= totalMonths; i++) {
+                const interestPayment = remainingPrincipal * monthlyRate;
+                const principalPayment = monthlyPayment - interestPayment;
+                remainingPrincipal -= principalPayment;
+                if (remainingPrincipal < 0) remainingPrincipal = 0;
+
+                mortgageScheduleData.push({
+                    month: i,
+                    payment: monthlyPayment,
+                    principal: principalPayment,
+                    interest: interestPayment,
+                    remaining: remainingPrincipal
+                });
+            }
+        } else {
+            const principalPerMonth = loanAmountTotal / totalMonths;
+            let totalPaymentTemp = 0;
+            mortgageScheduleData = [];
+            let remainingPrincipal = loanAmountTotal;
+
+            for (let i = 1; i <= totalMonths; i++) {
+                const interestThisMonth = remainingPrincipal * monthlyRate;
+                const paymentThisMonth = principalPerMonth + interestThisMonth;
+                totalPaymentTemp += paymentThisMonth;
+                remainingPrincipal -= principalPerMonth;
+                if (remainingPrincipal < 0) remainingPrincipal = 0;
+
+                mortgageScheduleData.push({
+                    month: i,
+                    payment: paymentThisMonth,
+                    principal: principalPerMonth,
+                    interest: interestThisMonth,
+                    remaining: remainingPrincipal
+                });
+            }
+            totalPayment = totalPaymentTemp;
+            monthlyPayment = totalPayment / totalMonths;
+        }
+
+        totalInterest = totalPayment - loanAmountTotal;
+
+        let firstMonthInterest = '';
+        if (repaymentType === 'equal' && mortgageScheduleData.length > 0) {
+            firstMonthInterest = `
+                <tr>
+                    <td>首月利息</td>
+                    <td>¥${mortgageScheduleData[0].interest.toLocaleString(undefined, {maximumFractionDigits: 2})}（逐月递减）</td>
+                </tr>
+            `;
+        }
+
+        resultHTML = `
+            <h3>计算结果</h3>
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>项目</th>
+                        <th>数值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>贷款总额</td>
+                        <td>¥${loanAmountTotal.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>还款方式</td>
+                        <td>${repaymentType === 'equal' ? '等额本息' : '等额本金'}</td>
+                    </tr>
+                    <tr>
+                        <td>月供</td>
+                        <td>¥${monthlyPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>还款总额</td>
+                        <td>¥${totalPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>支付利息</td>
+                        <td>¥${totalInterest.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>还款月数</td>
+                        <td>${totalMonths} 个月</td>
+                    </tr>
+                    ${firstMonthInterest}
+                </tbody>
+            </table>
+        `;
+    }
+
+    document.getElementById('mortgageResult').innerHTML = resultHTML;
+    document.getElementById('scheduleBtn').disabled = false;
+}
+
+function resetMortgage() {
+    const loanType = document.querySelector('.loan-type-option.active').getAttribute('onclick').match(/switchLoanType\('(.+?)'\)/)[1];
+    
+    document.getElementById('loanAmount').value = '';
+    document.getElementById('interestRate').value = '3.5';
+    document.getElementById('providentAmount').value = '';
+    document.getElementById('providentRate').value = '2.6';
+    document.getElementById('commercialAmount').value = '';
+    document.getElementById('commercialRate').value = '3.5';
+    document.getElementById('providentAmountComb').value = '';
+    document.getElementById('providentRateComb').value = '2.6';
+    document.getElementById('loanYears').value = '';
+    document.getElementById('commercialYears').value = '';
+    document.getElementById('providentYears').value = '';
+    document.getElementById('repaymentType').value = 'equal';
+    document.getElementById('commercialRepaymentType').value = 'equal';
+    document.getElementById('providentRepaymentType').value = 'equal';
+    document.getElementById('mortgageResult').innerHTML = `
+        <h3>计算结果</h3>
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>项目</th>
+                    <th>数值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>贷款总额</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>贷款类型</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>还款方式</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>月供</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>还款总额</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>支付利息</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>还款月数</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+    document.getElementById('scheduleBtn').disabled = true;
 }
 
 // 专项扣除金额更新
@@ -608,6 +1054,69 @@ function updateDeductionAmount(id, defaultValue) {
     } else {
         amountInput.disabled = true;
     }
+}
+
+function selectAllDeductions() {
+    const deductions = ['childEdu', 'continueEdu', 'medical', 'mortgageInterest', 'rent', 'supportElderly', 'infantCare'];
+    const defaultValues = {
+        'childEdu': 2000,
+        'continueEdu': 400,
+        'medical': 0,
+        'mortgageInterest': 1000,
+        'rent': 1500,
+        'supportElderly': 2000,
+        'infantCare': 2000
+    };
+
+    deductions.forEach(id => {
+        const checkbox = document.getElementById(id);
+        checkbox.checked = true;
+        updateDeductionAmount(id, defaultValues[id]);
+    });
+}
+
+function deselectAllDeductions() {
+    const deductions = ['childEdu', 'continueEdu', 'medical', 'mortgageInterest', 'rent', 'supportElderly', 'infantCare'];
+    const defaultValues = {
+        'childEdu': 2000,
+        'continueEdu': 400,
+        'medical': 0,
+        'mortgageInterest': 1000,
+        'rent': 1500,
+        'supportElderly': 2000,
+        'infantCare': 2000
+    };
+
+    deductions.forEach(id => {
+        const checkbox = document.getElementById(id);
+        checkbox.checked = !checkbox.checked;
+        if (checkbox.checked) {
+            updateDeductionAmount(id, defaultValues[id]);
+        } else {
+            updateDeductionAmount(id, 0);
+        }
+    });
+}
+
+function resetDeductions() {
+    const deductions = ['childEdu', 'continueEdu', 'medical', 'mortgageInterest', 'rent', 'supportElderly', 'infantCare'];
+    const defaultValues = {
+        'childEdu': 2000,
+        'continueEdu': 400,
+        'medical': 0,
+        'mortgageInterest': 1000,
+        'rent': 1500,
+        'supportElderly': 2000,
+        'infantCare': 2000
+    };
+
+    deductions.forEach(id => {
+        const checkbox = document.getElementById(id);
+        const amountInput = document.getElementById(id + 'Amount');
+        checkbox.checked = false;
+        amountInput.disabled = true;
+        amountInput.value = defaultValues[id];
+    });
 }
 
 function toggleInsuranceCalcType() {
@@ -641,8 +1150,81 @@ function switchTaxMode(mode) {
         document.getElementById('salaryNotes').style.display = 'block';
         document.getElementById('bonusNotes').style.display = 'none';
 
-        // 清除计算结果
-        document.getElementById('taxResult').style.display = 'none';
+        // 显示结果区域并初始化工资薪金空表格
+        document.getElementById('taxResult').style.display = 'block';
+        document.getElementById('taxResult').innerHTML = `
+            <h3>工资薪金个税计算结果</h3>
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>项目</th>
+                        <th>数值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>月收入</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>当前月份</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>专项附加扣除</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>五险一金扣除</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>累计收入</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>累计五险一金</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>累计专项附加扣除</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>累计减除费用</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>应纳税所得额(累计)</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>适用税率</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>速算扣除数</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>累计应纳税额</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>累计已缴纳税额</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>当月个税(应补税额)</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>税后收入(月)</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
 
         // 设置当前月份为当前月份
         const currentMonth = new Date().getMonth() + 1;
@@ -657,8 +1239,45 @@ function switchTaxMode(mode) {
         document.getElementById('salaryNotes').style.display = 'none';
         document.getElementById('bonusNotes').style.display = 'block';
 
-        // 清除计算结果
-        document.getElementById('taxResult').style.display = 'none';
+        // 显示结果区域并初始化年终奖空表格
+        document.getElementById('taxResult').style.display = 'block';
+        document.getElementById('taxResult').innerHTML = `
+            <h3>年终奖金个税计算结果</h3>
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>项目</th>
+                        <th>数值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>年终奖金</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>计税方式</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>适用税率</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>速算扣除数</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>应缴个税</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>税后奖金</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
     }
 }
 
@@ -823,23 +1442,249 @@ function calculateSalaryTax() {
 
     document.getElementById('taxResult').innerHTML = `
             <h3>工资薪金个税计算结果</h3>
-            <p><strong>月收入:</strong> ¥${monthlyIncome.toLocaleString()}</p>
-            <p><strong>当前月份:</strong> ${currentMonth} 月</p>
-            <p><strong>专项附加扣除:</strong> ¥${deductionTotal.toLocaleString()}</p>
-            <p><strong>五险一金扣除:</strong> ¥${monthlyInsuranceDeduction.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
-            <p><strong>累计收入:</strong> ¥${cumulativeIncome.toLocaleString()}</p>
-            <p><strong>累计五险一金:</strong> ¥${cumulativeInsurance.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
-            <p><strong>累计专项附加扣除:</strong> ¥${cumulativeDeduction.toLocaleString()}</p>
-            <p><strong>累计减除费用:</strong> ¥${cumulativeThreshold.toLocaleString()}</p>
-            <p><strong>应纳税所得额(累计):</strong> ¥${cumulativeTaxableIncome.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
-            <p><strong>适用税率:</strong> ${(taxRate * 100).toFixed(1)}%</p>
-            <p><strong>速算扣除数:</strong> ¥${quickDeduction.toLocaleString()}</p>
-            <p><strong>累计应纳税额:</strong> ¥${cumulativeTax.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
-            <p><strong>累计已缴纳税额:</strong> ¥${cumulativeTaxPrevMonth.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
-            <p><strong>当月个税(应补税额):</strong> ¥${monthlyTax.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
-            <p><strong>税后收入(月):</strong> ¥${netIncome.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>项目</th>
+                        <th>数值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>月收入</td>
+                        <td>¥${monthlyIncome.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>当前月份</td>
+                        <td>${currentMonth} 月</td>
+                    </tr>
+                    <tr>
+                        <td>专项附加扣除</td>
+                        <td>¥${deductionTotal.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>五险一金扣除</td>
+                        <td>¥${monthlyInsuranceDeduction.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>累计收入</td>
+                        <td>¥${cumulativeIncome.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>累计五险一金</td>
+                        <td>¥${cumulativeInsurance.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>累计专项附加扣除</td>
+                        <td>¥${cumulativeDeduction.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>累计减除费用</td>
+                        <td>¥${cumulativeThreshold.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>应纳税所得额(累计)</td>
+                        <td>¥${cumulativeTaxableIncome.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>适用税率</td>
+                        <td>${(taxRate * 100).toFixed(1)}%</td>
+                    </tr>
+                    <tr>
+                        <td>速算扣除数</td>
+                        <td>¥${quickDeduction.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>累计应纳税额</td>
+                        <td>¥${cumulativeTax.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>累计已缴纳税额</td>
+                        <td>¥${cumulativeTaxPrevMonth.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>当月个税(应补税额)</td>
+                        <td>¥${monthlyTax.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>税后收入(月)</td>
+                        <td>¥${netIncome.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                </tbody>
+            </table>
         `;
-    document.getElementById('taxResult').style.display = 'block';
+}
+
+let currentPage = 1;
+let itemsPerPage = 10;
+let currentScheduleType = 'total';
+
+function showScheduleModal() {
+    const modal = document.getElementById('scheduleModal');
+    modal.style.display = 'flex';
+    
+    const loanType = document.querySelector('.loan-type-option.active').getAttribute('onclick').match(/switchLoanType\('(.+?)'\)/)[1];
+    
+    if (loanType === 'combination') {
+        document.getElementById('modalCombinationButtons').style.display = 'flex';
+        currentScheduleType = 'total';
+    } else {
+        document.getElementById('modalCombinationButtons').style.display = 'none';
+        currentScheduleType = 'total';
+    }
+    
+    currentPage = 1;
+    showModalCombinationSchedule(currentScheduleType);
+}
+
+function closeScheduleModal() {
+    document.getElementById('scheduleModal').style.display = 'none';
+}
+
+function showModalCombinationSchedule(type) {
+    currentScheduleType = type;
+    const tbody = document.getElementById('modalScheduleBody');
+    tbody.innerHTML = '';
+    
+    let scheduleData;
+    
+    if (type === 'commercial') {
+        scheduleData = commercialScheduleData || [];
+    } else if (type === 'provident') {
+        scheduleData = providentScheduleData || [];
+    } else {
+        scheduleData = mortgageScheduleData || [];
+    }
+    
+    if (!scheduleData || scheduleData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">暂无数据</td></tr>';
+        document.getElementById('pageInfo').textContent = '第 0 页 / 共 0 页';
+        updatePaginationButtons(0);
+        return;
+    }
+    
+    const totalPages = Math.ceil(scheduleData.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const pageData = scheduleData.slice(startIndex, endIndex);
+    
+    pageData.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${row.month}</td>
+            <td>¥${row.payment.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+            <td>¥${row.principal.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+            <td>¥${row.interest.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+            <td>¥${row.remaining.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+    
+    document.getElementById('pageInfo').textContent = `第 ${currentPage} 页 / 共 ${totalPages} 页`;
+    document.getElementById('jumpToPage').value = currentPage;
+    document.getElementById('jumpToPage').max = totalPages;
+    updatePaginationButtons(totalPages);
+    
+    const buttons = document.querySelectorAll('#modalCombinationButtons .btn-combination');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    const activeButton = document.querySelector(`#modalCombinationButtons .btn-combination[onclick="showModalCombinationSchedule('${type}')"]`);
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
+}
+
+function updatePaginationButtons(totalPages) {
+    const buttons = document.querySelectorAll('.btn-pagination');
+    buttons.forEach(btn => {
+        const onclick = btn.getAttribute('onclick');
+        if (onclick === 'goToFirstPage()') {
+            btn.disabled = totalPages === 0 || currentPage === 1;
+        } else if (onclick === 'changePage(-1)') {
+            btn.disabled = totalPages === 0 || currentPage === 1;
+        } else if (onclick === 'changePage(1)') {
+            btn.disabled = totalPages === 0 || currentPage === totalPages;
+        } else if (onclick === 'goToLastPage()') {
+            btn.disabled = totalPages === 0 || currentPage === totalPages;
+        } else if (onclick === 'jumpToPage()') {
+            btn.disabled = totalPages === 0;
+        }
+    });
+}
+
+function changePage(delta) {
+    let scheduleData;
+    
+    if (currentScheduleType === 'commercial') {
+        scheduleData = commercialScheduleData || [];
+    } else if (currentScheduleType === 'provident') {
+        scheduleData = providentScheduleData || [];
+    } else {
+        scheduleData = mortgageScheduleData || [];
+    }
+    
+    const totalPages = Math.ceil(scheduleData.length / itemsPerPage);
+    const newPage = currentPage + delta;
+    
+    if (newPage >= 1 && newPage <= totalPages) {
+        currentPage = newPage;
+        showModalCombinationSchedule(currentScheduleType);
+    }
+}
+
+function goToFirstPage() {
+    currentPage = 1;
+    showModalCombinationSchedule(currentScheduleType);
+}
+
+function goToLastPage() {
+    let scheduleData;
+    
+    if (currentScheduleType === 'commercial') {
+        scheduleData = commercialScheduleData || [];
+    } else if (currentScheduleType === 'provident') {
+        scheduleData = providentScheduleData || [];
+    } else {
+        scheduleData = mortgageScheduleData || [];
+    }
+    
+    const totalPages = Math.ceil(scheduleData.length / itemsPerPage);
+    if (totalPages > 0) {
+        currentPage = totalPages;
+        showModalCombinationSchedule(currentScheduleType);
+    }
+}
+
+function jumpToPage() {
+    const input = document.getElementById('jumpToPage');
+    const targetPage = parseInt(input.value);
+    
+    let scheduleData;
+    
+    if (currentScheduleType === 'commercial') {
+        scheduleData = commercialScheduleData || [];
+    } else if (currentScheduleType === 'provident') {
+        scheduleData = providentScheduleData || [];
+    } else {
+        scheduleData = mortgageScheduleData || [];
+    }
+    
+    const totalPages = Math.ceil(scheduleData.length / itemsPerPage);
+    
+    if (targetPage >= 1 && targetPage <= totalPages) {
+        currentPage = targetPage;
+        showModalCombinationSchedule(currentScheduleType);
+    } else {
+        alert(`请输入有效的页码（1-${totalPages}）`);
+        input.value = currentPage;
+    }
+}
+
+function changePageSize() {
+    const select = document.getElementById('pageSizeSelect');
+    itemsPerPage = parseInt(select.value);
+    currentPage = 1;
+    showModalCombinationSchedule(currentScheduleType);
 }
 
 function calculateBonusTax() {
@@ -885,25 +1730,213 @@ function calculateBonusTax() {
 
         result = `
                 <h3>年终奖金个税计算结果（单独计税）</h3>
-                <p><strong>年终奖金:</strong> ¥${annualBonus.toLocaleString()}</p>
-                <p><strong>月均奖金:</strong> ¥${monthlyBonus.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
-                <p><strong>适用税率:</strong> ${(taxRate * 100).toFixed(1)}%</p>
-                <p><strong>速算扣除数:</strong> ¥${quickDeduction.toLocaleString()}</p>
-                <p><strong>应缴个税:</strong> ¥${tax.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
-                <p><strong>税后奖金:</strong> ¥${netBonus.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>项目</th>
+                            <th>数值</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>年终奖金</td>
+                            <td>¥${annualBonus.toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <td>月均奖金</td>
+                            <td>¥${monthlyBonus.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                        </tr>
+                        <tr>
+                            <td>适用税率</td>
+                            <td>${(taxRate * 100).toFixed(1)}%</td>
+                        </tr>
+                        <tr>
+                            <td>速算扣除数</td>
+                            <td>¥${quickDeduction.toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <td>应缴个税</td>
+                            <td>¥${tax.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                        </tr>
+                        <tr>
+                            <td>税后奖金</td>
+                            <td>¥${netBonus.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                        </tr>
+                    </tbody>
+                </table>
             `;
     } else {
         // 并入当年综合所得计税：需要考虑其他综合所得
         result = `
                 <h3>年终奖金个税计算结果（并入当年综合所得）</h3>
-                <p><strong>年终奖金:</strong> ¥${annualBonus.toLocaleString()}</p>
-                <p><strong>说明:</strong> 并入当年综合所得计税需要考虑全年其他综合所得，按年度税率表计算。此模式下，年终奖金将与工资薪金合并计算个税。</p>
-                <p><strong>建议:</strong> 如需精确计算，请使用工资薪金模式并输入全年收入总额。</p>
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>项目</th>
+                            <th>数值</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>年终奖金</td>
+                            <td>¥${annualBonus.toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <td>说明</td>
+                            <td>并入当年综合所得计税需要考虑全年其他综合所得，按年度税率表计算。此模式下，年终奖金将与工资薪金合并计算个税。</td>
+                        </tr>
+                        <tr>
+                            <td>建议</td>
+                            <td>如需精确计算，请使用工资薪金模式并输入全年收入总额。</td>
+                        </tr>
+                    </tbody>
+                </table>
             `;
     }
 
     document.getElementById('taxResult').innerHTML = result;
-    document.getElementById('taxResult').style.display = 'block';
+}
+
+function resetTax() {
+    const activeTaxMode = document.querySelector('.tax-option.active').textContent.includes('工资') ? 'salary' : 'bonus';
+    
+    if (activeTaxMode === 'salary') {
+        document.getElementById('monthlyIncome').value = '';
+        document.getElementById('currentMonth').value = '1';
+        document.getElementById('childEdu').checked = false;
+        document.getElementById('childEduAmount').value = '1000';
+        document.getElementById('continueEdu').checked = false;
+        document.getElementById('continueEduAmount').value = '400';
+        document.getElementById('medical').checked = false;
+        document.getElementById('medicalAmount').value = '0';
+        document.getElementById('mortgageInterest').checked = false;
+        document.getElementById('mortgageInterestAmount').value = '1000';
+        document.getElementById('rent').checked = false;
+        document.getElementById('rentAmount').value = '1500';
+        document.getElementById('supportElderly').checked = false;
+        document.getElementById('supportElderlyAmount').value = '2000';
+        document.getElementById('infantCare').checked = false;
+        document.getElementById('infantCareAmount').value = '2000';
+        document.getElementById('insuranceCalcType').value = 'rate';
+        document.getElementById('housingFundRate').value = '8';
+        document.getElementById('insuranceRate').value = '2';
+        document.getElementById('pensionRate').value = '8';
+        document.getElementById('unemploymentRate').value = '0.5';
+        document.getElementById('injuryRate').value = '0';
+        document.getElementById('maternityRate').value = '0';
+        document.getElementById('monthlyInsuranceDeduction').value = '';
+        
+        document.getElementById('taxResult').innerHTML = `
+            <h3>工资薪金个税计算结果</h3>
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>项目</th>
+                        <th>数值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>月收入</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>当前月份</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>专项附加扣除</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>五险一金扣除</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>累计收入</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>累计五险一金</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>累计专项附加扣除</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>累计减除费用</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>应纳税所得额(累计)</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>适用税率</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>速算扣除数</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>累计应纳税额</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>累计已缴纳税额</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>当月个税(应补税额)</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>税后收入(月)</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+    } else {
+        document.getElementById('annualBonus').value = '';
+        document.getElementById('bonusTaxMethod').value = 'separate';
+        
+        document.getElementById('taxResult').innerHTML = `
+            <h3>年终奖金个税计算结果</h3>
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>项目</th>
+                        <th>数值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>年终奖金</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>适用税率</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>速算扣除数</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>应纳税额</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>税后奖金</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+    }
 }
 
 // 大写数字转换
@@ -1436,12 +2469,144 @@ function calculateBMI() {
 
     document.getElementById('bmiResult').innerHTML = `
             <h3>BMI计算结果</h3>
-            <p><strong>身高:</strong> ${height} cm</p>
-            <p><strong>体重:</strong> ${weight} kg</p>
-            <p><strong>BMI指数:</strong> ${bmi.toFixed(2)}</p>
-            <p><strong>身体状况:</strong> ${category}</p>
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>项目</th>
+                        <th>数值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>身高</td>
+                        <td>${height} cm</td>
+                    </tr>
+                    <tr>
+                        <td>体重</td>
+                        <td>${weight} kg</td>
+                    </tr>
+                    <tr>
+                        <td>BMI指数</td>
+                        <td>${bmi.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>身体状况</td>
+                        <td>${category}</td>
+                    </tr>
+                </tbody>
+            </table>
         `;
-    document.getElementById('bmiResult').style.display = 'block';
+}
+
+function resetBMI() {
+    document.getElementById('height').value = '';
+    document.getElementById('weight').value = '';
+    document.getElementById('bmiResult').innerHTML = `
+        <h3>BMI计算结果</h3>
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>项目</th>
+                    <th>数值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>身高</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>体重</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>BMI指数</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>身体状况</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+}
+
+function resetLength() {
+    document.getElementById('lengthFrom').value = '';
+    document.getElementById('lengthFromUnit').value = 'm';
+    document.getElementById('lengthTo').value = 'm';
+    document.getElementById('lengthResult').innerHTML = '';
+}
+
+function resetArea() {
+    document.getElementById('areaFrom').value = '';
+    document.getElementById('areaFromUnit').value = 'sqm';
+    document.getElementById('areaTo').value = 'sqm';
+    document.getElementById('areaResult').innerHTML = '';
+}
+
+function resetVolume() {
+    document.getElementById('volumeFrom').value = '';
+    document.getElementById('volumeFromUnit').value = 'l';
+    document.getElementById('volumeTo').value = 'l';
+    document.getElementById('volumeResult').innerHTML = '';
+}
+
+function resetWeight() {
+    document.getElementById('weightFrom').value = '';
+    document.getElementById('weightFromUnit').value = 'kg';
+    document.getElementById('weightTo').value = 'kg';
+    document.getElementById('weightResult').innerHTML = '';
+}
+
+function resetTemperature() {
+    document.getElementById('tempFrom').value = '';
+    document.getElementById('tempFromUnit').value = 'celsius';
+    document.getElementById('tempTo').value = 'celsius';
+    document.getElementById('tempResult').innerHTML = '';
+}
+
+function resetPressure() {
+    document.getElementById('pressureFrom').value = '';
+    document.getElementById('pressureFromUnit').value = 'pa';
+    document.getElementById('pressureTo').value = 'pa';
+    document.getElementById('pressureResult').innerHTML = '';
+}
+
+function resetTime() {
+    document.getElementById('timeFrom').value = '';
+    document.getElementById('timeFromUnit').value = 's';
+    document.getElementById('timeTo').value = 's';
+    document.getElementById('timeResult').innerHTML = '';
+}
+
+function resetSpeed() {
+    document.getElementById('speedFrom').value = '';
+    document.getElementById('speedFromUnit').value = 'kmh';
+    document.getElementById('speedTo').value = 'kmh';
+    document.getElementById('speedResult').innerHTML = '';
+}
+
+function resetPower() {
+    document.getElementById('powerFrom').value = '';
+    document.getElementById('powerFromUnit').value = 'w';
+    document.getElementById('powerTo').value = 'w';
+    document.getElementById('powerResult').innerHTML = '';
+}
+
+function resetBase() {
+    document.getElementById('baseFrom').value = '';
+    document.getElementById('baseFromUnit').value = '10';
+    document.getElementById('baseTo').value = '10';
+    document.getElementById('baseResult').innerHTML = '';
+}
+
+function resetData() {
+    document.getElementById('dataFrom').value = '';
+    document.getElementById('dataFromUnit').value = 'B';
+    document.getElementById('dataTo').value = 'B';
+    document.getElementById('dataResult').innerHTML = '';
 }
 
 function getUnitName(unitCode) {
@@ -1525,4 +2690,158 @@ document.addEventListener('DOMContentLoaded', function() {
     // 设置当前月份为当前月份
     const currentMonth = new Date().getMonth() + 1;
     document.getElementById('currentMonth').value = currentMonth;
+
+    // 初始化所有结果表格为空表格
+    initializeResultTables();
 });
+
+function initializeResultTables() {
+    // BMI计算器空表格
+    document.getElementById('bmiResult').innerHTML = `
+        <h3>BMI计算结果</h3>
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>项目</th>
+                    <th>数值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>身高</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>体重</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>BMI指数</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>身体状况</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+
+    // 房贷计算器空表格
+    document.getElementById('mortgageResult').innerHTML = `
+        <h3>计算结果</h3>
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>项目</th>
+                    <th>数值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>贷款总额</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>贷款类型</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>还款方式</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>月供</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>还款总额</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>支付利息</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>还款月数</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+
+    // 个税计算器空表格
+    document.getElementById('taxResult').innerHTML = `
+        <h3>工资薪金个税计算结果</h3>
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>项目</th>
+                    <th>数值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>月收入</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>当前月份</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>专项附加扣除</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>五险一金扣除</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>累计收入</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>累计五险一金</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>累计专项附加扣除</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>累计减除费用</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>应纳税所得额(累计)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>适用税率</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>速算扣除数</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>累计应纳税额</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>累计已缴纳税额</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>当月个税(应补税额)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>税后收入(月)</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+}

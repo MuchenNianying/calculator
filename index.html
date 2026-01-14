@@ -22,11 +22,7 @@
         <button class="nav-tab" onclick="showSection('conversions')">单位转换</button>
         <button class="nav-tab" onclick="showSection('advanced')">程序员工具</button>
         <button class="nav-tab" onclick="showSection('bmi')">BMI计算器</button>
-    </div>
-    
-    <!-- 顶部广告位 -->
-    <div class="adsense-ad ad-top">
-        <!-- AdSense广告代码将放置在此处 -->
+        <button class="nav-tab" onclick="showSection('about')">关于</button>
     </div>
 
     <div id="tax" class="calculator-section tax-calculator active">
@@ -58,124 +54,133 @@
                     <option value="12">12月</option>
                 </select>
             </div>
-            <h3>专项附加扣除</h3>
-            <div class="deduction-grid">
-                <div class="deduction-row">
-                    <div class="input-group">
-                        <input type="checkbox" id="childEdu" onchange="updateDeductionAmount('childEdu', 2000)">
-                        <label for="childEdu">子女教育</label>
-                        <input type="number" id="childEduAmount" value="2000" min="0" max="10000">
-                    </div>
-                    <div class="input-group">
-                        <input type="checkbox" id="continueEdu" onchange="updateDeductionAmount('continueEdu', 400)">
-                        <label for="continueEdu">继续教育</label>
-                        <input type="number" id="continueEduAmount" value="400" min="0" max="10000">
-                    </div>
-                </div>
-                <div class="deduction-row">
-                    <div class="input-group">
-                        <input type="checkbox" id="medical" onchange="updateDeductionAmount('medical', 0)">
-                        <label for="medical">大病医疗</label>
-                        <input type="number" id="medicalAmount" value="0" min="0" max="80000">
-                    </div>
-                    <div class="input-group">
-                        <input type="checkbox" id="mortgageInterest" onchange="updateDeductionAmount('mortgageInterest', 1000)">
-                        <label for="mortgageInterest">住房贷款利息</label>
-                        <input type="number" id="mortgageInterestAmount" value="1000" min="0" max="10000">
-                    </div>
-                </div>
-                <div class="deduction-row">
-                    <div class="input-group">
-                        <input type="checkbox" id="rent" onchange="updateDeductionAmount('rent', 1500)">
-                        <label for="rent">住房租金</label>
-                        <input type="number" id="rentAmount" value="1500" min="0" max="10000">
-                    </div>
-                    <div class="input-group">
-                        <input type="checkbox" id="supportElderly" onchange="updateDeductionAmount('supportElderly', 2000)">
-                        <label for="supportElderly">赡养老人</label>
-                        <input type="number" id="supportElderlyAmount" value="2000" min="0" max="10000">
-                    </div>
-                </div>
-                <div class="deduction-row">
-                    <div class="input-group">
-                        <input type="checkbox" id="infantCare" onchange="updateDeductionAmount('infantCare', 2000)">
-                        <label for="infantCare">0-3岁婴幼儿照护</label>
-                        <input type="number" id="infantCareAmount" value="2000" min="0" max="10000">
-                    </div>
-                </div>
-            </div>
-            <h3>五险一金扣除</h3>
-            <div class="input-group">
-                <label>计算方式</label>
-                <select id="insuranceCalcType" onchange="toggleInsuranceCalcType()">
-                    <option value="rate">按比例计算</option>
-                    <option value="amount">按实际金额计算</option>
-                </select>
-            </div>
-            <div id="insuranceRateInputs" class="insurance-inputs">
+            <div class="deduction-section">
+                <h3>专项附加扣除</h3>
                 <div class="deduction-grid">
                     <div class="deduction-row">
                         <div class="input-group">
-                            <label>公积金比例 (%)</label>
-                            <input type="number" id="housingFundRate" placeholder="例如: 8" value="8" min="0" max="100">
+                            <input type="checkbox" id="childEdu" onchange="updateDeductionAmount('childEdu', 2000)">
+                            <label for="childEdu">子女教育</label>
+                            <input type="number" id="childEduAmount" value="2000" min="0" max="10000">
                         </div>
                         <div class="input-group">
-                            <label>医疗比例 (%)</label>
-                            <input type="number" id="medicalRate" placeholder="例如: 2" value="2" min="0" max="100">
-                        </div>
-                    </div>
-                    <div class="deduction-row">
-                        <div class="input-group">
-                            <label>养老比例 (%)</label>
-                            <input type="number" id="pensionRate" placeholder="例如: 8" value="8" min="0" max="100">
-                        </div>
-                        <div class="input-group">
-                            <label>失业比例 (%)</label>
-                            <input type="number" id="unemploymentRate" placeholder="例如: 0.5" value="0.5" min="0" max="100">
+                            <input type="checkbox" id="continueEdu" onchange="updateDeductionAmount('continueEdu', 400)">
+                            <label for="continueEdu">继续教育</label>
+                            <input type="number" id="continueEduAmount" value="400" min="0" max="10000">
                         </div>
                     </div>
                     <div class="deduction-row">
                         <div class="input-group">
-                            <label>工伤比例 (%)</label>
-                            <input type="number" id="injuryRate" placeholder="例如: 0" value="0" min="0" max="100">
+                            <input type="checkbox" id="medical" onchange="updateDeductionAmount('medical', 0)">
+                            <label for="medical">大病医疗</label>
+                            <input type="number" id="medicalAmount" value="0" min="0" max="80000">
                         </div>
                         <div class="input-group">
-                            <label>生育比例 (%)</label>
-                            <input type="number" id="maternityRate" placeholder="例如: 0" value="0" min="0" max="100">
+                            <input type="checkbox" id="mortgageInterest" onchange="updateDeductionAmount('mortgageInterest', 1000)">
+                            <label for="mortgageInterest">住房贷款利息</label>
+                            <input type="number" id="mortgageInterestAmount" value="1000" min="0" max="10000">
+                        </div>
+                    </div>
+                    <div class="deduction-row">
+                        <div class="input-group">
+                            <input type="checkbox" id="rent" onchange="updateDeductionAmount('rent', 1500)">
+                            <label for="rent">住房租金</label>
+                            <input type="number" id="rentAmount" value="1500" min="0" max="10000">
+                        </div>
+                        <div class="input-group">
+                            <input type="checkbox" id="supportElderly" onchange="updateDeductionAmount('supportElderly', 2000)">
+                            <label for="supportElderly">赡养老人</label>
+                            <input type="number" id="supportElderlyAmount" value="2000" min="0" max="10000">
+                        </div>
+                    </div>
+                    <div class="deduction-row">
+                        <div class="input-group">
+                            <input type="checkbox" id="infantCare" onchange="updateDeductionAmount('infantCare', 2000)">
+                            <label for="infantCare">0-3岁婴幼儿照护</label>
+                            <input type="number" id="infantCareAmount" value="2000" min="0" max="10000">
                         </div>
                     </div>
                 </div>
+                <div class="deduction-buttons">
+                    <button class="btn btn-small" onclick="selectAllDeductions()">全选</button>
+                    <button class="btn btn-small" onclick="deselectAllDeductions()">反选</button>
+                    <button class="btn btn-small btn-reset" onclick="resetDeductions()">重置</button>
+                </div>
             </div>
-            <div id="insuranceAmountInputs" class="insurance-inputs" style="display: none;">
-                <div class="deduction-grid">
-                    <div class="deduction-row">
-                        <div class="input-group">
-                            <label>公积金金额（元）</label>
-                            <input type="number" id="housingFundAmount" placeholder="例如: 2000" min="0">
+            <div class="insurance-section">
+                <h3>五险一金扣除</h3>
+                <div class="input-group">
+                    <label>计算方式</label>
+                    <select id="insuranceCalcType" onchange="toggleInsuranceCalcType()">
+                        <option value="rate">按比例计算</option>
+                        <option value="amount">按实际金额计算</option>
+                    </select>
+                </div>
+                <div id="insuranceRateInputs" class="insurance-inputs">
+                    <div class="deduction-grid">
+                        <div class="deduction-row">
+                            <div class="input-group">
+                                <label>公积金比例 (%)</label>
+                                <input type="number" id="housingFundRate" placeholder="例如: 8" value="8" min="0" max="100">
+                            </div>
+                            <div class="input-group">
+                                <label>医疗比例 (%)</label>
+                                <input type="number" id="medicalRate" placeholder="例如: 2" value="2" min="0" max="100">
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <label>医疗金额（元）</label>
-                            <input type="number" id="medicalInsuranceAmount" placeholder="例如: 500" min="0">
+                        <div class="deduction-row">
+                            <div class="input-group">
+                                <label>养老比例 (%)</label>
+                                <input type="number" id="pensionRate" placeholder="例如: 8" value="8" min="0" max="100">
+                            </div>
+                            <div class="input-group">
+                                <label>失业比例 (%)</label>
+                                <input type="number" id="unemploymentRate" placeholder="例如: 0.5" value="0.5" min="0" max="100">
+                            </div>
+                        </div>
+                        <div class="deduction-row">
+                            <div class="input-group">
+                                <label>工伤比例 (%)</label>
+                                <input type="number" id="injuryRate" placeholder="例如: 0" value="0" min="0" max="100">
+                            </div>
+                            <div class="input-group">
+                                <label>生育比例 (%)</label>
+                                <input type="number" id="maternityRate" placeholder="例如: 0" value="0" min="0" max="100">
+                            </div>
                         </div>
                     </div>
-                    <div class="deduction-row">
-                        <div class="input-group">
-                            <label>养老金额（元）</label>
-                            <input type="number" id="pensionAmount" placeholder="例如: 2000" min="0">
+                </div>
+                <div id="insuranceAmountInputs" class="insurance-inputs" style="display: none;">
+                    <div class="deduction-grid">
+                        <div class="deduction-row">
+                            <div class="input-group">
+                                <label>公积金金额（元）</label>
+                                <input type="number" id="housingFundAmount" placeholder="例如: 2000" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>医疗金额（元）</label>
+                                <input type="number" id="medicalInsuranceAmount" placeholder="例如: 500" min="0">
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <label>失业金额（元）</label>
-                            <input type="number" id="unemploymentAmount" placeholder="例如: 125" min="0">
+                        <div class="deduction-row">
+                            <div class="input-group">
+                                <label>养老金额（元）</label>
+                                <input type="number" id="pensionAmount" placeholder="例如: 2000" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>失业金额（元）</label>
+                                <input type="number" id="unemploymentAmount" placeholder="例如: 125" min="0">
+                            </div>
                         </div>
-                    </div>
-                    <div class="deduction-row">
-                        <div class="input-group">
-                            <label>工伤金额（元）</label>
-                            <input type="number" id="injuryAmount" placeholder="例如: 0" min="0">
-                        </div>
-                        <div class="input-group">
-                            <label>生育金额（元）</label>
-                            <input type="number" id="maternityAmount" placeholder="例如: 0" min="0">
+                        <div class="deduction-row">
+                            <div class="input-group">
+                                <label>工伤金额（元）</label>
+                                <input type="number" id="injuryAmount" placeholder="例如: 0" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>生育金额（元）</label>
+                                <input type="number" id="maternityAmount" placeholder="例如: 0" min="0">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -197,10 +202,11 @@
         </div>
 
         <button class="btn" onclick="calculateTax()">计算个税</button>
-        <div id="taxResult" class="result" style="display: none;"></div>
-        
-        <!-- 个税计算结果下方广告位 -->
-        <div class="adsense-ad ad-tax-result">
+        <button class="btn btn-reset" onclick="resetTax()">重置</button>
+        <div id="taxResult" class="result" style="display: block;"></div>
+
+        <!-- 个税计算广告位 -->
+        <div class="adsense-ad ad-tax">
             <!-- AdSense广告代码将放置在此处 -->
         </div>
 
@@ -332,65 +338,173 @@
 
     <div id="mortgage" class="calculator-section mortgage-calculator">
         <h2>房贷计算</h2>
-        <div class="input-group">
-            <label>贷款总额 (万元)</label>
-            <input type="number" id="loanAmount" placeholder="例如: 100">
+        <div class="loan-type-options">
+            <div class="loan-type-option active" onclick="switchLoanType('commercial')">商业贷款</div>
+            <div class="loan-type-option" onclick="switchLoanType('provident')">公积金贷款</div>
+            <div class="loan-type-option" onclick="switchLoanType('combination')">组合贷款</div>
         </div>
-        <div class="input-group">
-            <label>年利率 (%)</label>
-            <input type="number" id="interestRate" step="0.01" placeholder="例如: 4.9">
+
+        <div id="commercialLoan">
+            <div class="input-group">
+                <label>贷款总额 (万元)</label>
+                <input type="number" id="loanAmount" placeholder="例如: 100">
+            </div>
+            <div class="input-group">
+                <label>年利率 (%)</label>
+                <input type="number" id="interestRate" step="0.01" value="3.5" placeholder="例如: 3.5">
+            </div>
         </div>
-        <div class="input-group">
-            <label>贷款年限</label>
-            <input type="number" id="loanYears" placeholder="例如: 30">
+
+        <div id="providentLoan" style="display: none;">
+            <div class="input-group">
+                <label>贷款总额 (万元)</label>
+                <input type="number" id="providentAmount" placeholder="例如: 50">
+            </div>
+            <div class="input-group">
+                <label>年利率 (%)</label>
+                <input type="number" id="providentRate" step="0.01" value="2.6" placeholder="例如: 2.6">
+            </div>
         </div>
-        <div class="input-group">
-            <label>还款方式</label>
-            <select id="repaymentType">
-                <option value="equal">等额本息</option>
-                <option value="decreasing">等额本金</option>
-            </select>
+
+        <div id="commonLoanInputs">
+            <div class="input-group">
+                <label>贷款年限</label>
+                <input type="number" id="loanYears" placeholder="例如: 30">
+            </div>
+            <div class="input-group">
+                <label>还款方式</label>
+                <select id="repaymentType">
+                    <option value="equal">等额本息</option>
+                    <option value="decreasing">等额本金</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="combinationLoan" style="display: none;">
+            <div class="loan-section">
+                <h3>商业贷款</h3>
+                <div class="input-group">
+                    <label>商业贷款总额 (万元)</label>
+                    <input type="number" id="commercialAmount" placeholder="例如: 50">
+                </div>
+                <div class="input-group">
+                    <label>商业贷款年利率 (%)</label>
+                    <input type="number" id="commercialRate" step="0.01" value="3.5" placeholder="例如: 3.5">
+                </div>
+                <div class="input-group">
+                    <label>商业贷款年限 (年)</label>
+                    <input type="number" id="commercialYears" placeholder="例如: 30">
+                </div>
+                <div class="input-group">
+                    <label>商业贷款还款方式</label>
+                    <select id="commercialRepaymentType">
+                        <option value="equal">等额本息</option>
+                        <option value="decreasing">等额本金</option>
+                    </select>
+                </div>
+            </div>
+            <div class="loan-section">
+                <h3>公积金贷款</h3>
+                <div class="input-group">
+                    <label>公积金贷款总额 (万元)</label>
+                    <input type="number" id="providentAmountComb" placeholder="例如: 50">
+                </div>
+                <div class="input-group">
+                    <label>公积金贷款年利率 (%)</label>
+                    <input type="number" id="providentRateComb" step="0.01" value="2.6" placeholder="例如: 2.6">
+                </div>
+                <div class="input-group">
+                    <label>公积金贷款年限 (年)</label>
+                    <input type="number" id="providentYears" placeholder="例如: 30">
+                </div>
+                <div class="input-group">
+                    <label>公积金贷款还款方式</label>
+                    <select id="providentRepaymentType">
+                        <option value="equal">等额本息</option>
+                        <option value="decreasing">等额本金</option>
+                    </select>
+                </div>
+            </div>
         </div>
         <button class="btn" onclick="calculateMortgage()">计算</button>
-        <div id="mortgageResult" class="result" style="display: none;"></div>
-        
-        <!-- 房贷计算结果下方广告位 -->
-        <div class="adsense-ad ad-mortgage-result">
+        <button class="btn btn-reset" onclick="resetMortgage()">重置</button>
+        <button class="btn btn-schedule" id="scheduleBtn" onclick="showScheduleModal()" disabled>还款计划明细</button>
+        <div id="mortgageResult" class="result" style="display: block;"></div>
+
+        <!-- 还款计划明细弹出层 -->
+        <div id="scheduleModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>还款计划明细</h3>
+                    <button class="modal-close" onclick="closeScheduleModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="modalCombinationButtons" class="combination-schedule-buttons" style="display: none;">
+                        <button class="btn btn-combination active" onclick="showModalCombinationSchedule('total')">合计明细</button>
+                        <button class="btn btn-combination" onclick="showModalCombinationSchedule('commercial')">商业贷款明细</button>
+                        <button class="btn btn-combination" onclick="showModalCombinationSchedule('provident')">公积金贷款明细</button>
+                    </div>
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>期数</th>
+                                <th>月供</th>
+                                <th>本金</th>
+                                <th>利息</th>
+                                <th>剩余本金</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalScheduleBody"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="pagination">
+                    <button class="btn btn-pagination" onclick="goToFirstPage()">首页</button>
+                    <button class="btn btn-pagination" onclick="changePage(-1)">上一页</button>
+                    <span id="pageInfo">第 1 页 / 共 1 页</span>
+                    <button class="btn btn-pagination" onclick="changePage(1)">下一页</button>
+                    <button class="btn btn-pagination" onclick="goToLastPage()">末页</button>
+                    <div class="pagination-controls">
+                        <input type="number" id="jumpToPage" min="1" value="1" class="pagination-input" placeholder="页码">
+                        <button class="btn btn-pagination" onclick="jumpToPage()">跳转</button>
+                        <select id="pageSizeSelect" class="pagination-select" onchange="changePageSize()">
+                            <option value="10">10条/页</option>
+                            <option value="20">20条/页</option>
+                            <option value="50">50条/页</option>
+                            <option value="100">100条/页</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 房贷计算广告位 -->
+        <div class="adsense-ad ad-mortgage">
             <!-- AdSense广告代码将放置在此处 -->
         </div>
-        <div id="mortgageSchedule" class="mortgage-schedule" style="display: none;">
-            <h3>还款计划明细</h3>
-            <div class="schedule-controls">
-                <button class="btn" onclick="toggleSchedule()">显示/隐藏还款计划</button>
-            </div>
-            <div id="scheduleContent" class="schedule-content" style="display: none;">
-                <table class="schedule-table">
-                    <thead>
-                        <tr>
-                            <th>期数</th>
-                            <th>月供</th>
-                            <th>本金</th>
-                            <th>利息</th>
-                            <th>剩余本金</th>
-                        </tr>
-                    </thead>
-                    <tbody id="scheduleBody"></tbody>
-                </table>
-            </div>
-        </div>
+
         <div class="module-description">
             <h3>房贷计算功能说明</h3>
-            <p>本工具支持等额本息和等额本金两种常见还款方式的计算，帮助用户预估每月还款金额、总利息支出以及详细的还款计划。计算结果仅供参考，实际还款金额以银行审批为准。</p>
-            
+            <p>本工具支持商业贷款、公积金贷款和组合贷款三种贷款类型，以及等额本息和等额本金两种常见还款方式的计算，帮助用户预估每月还款金额、总利息支出以及详细的还款计划。计算结果仅供参考，实际还款金额以银行审批为准。</p>
+
+            <h4>贷款类型说明</h4>
+            <p><strong>商业贷款：</strong>由商业银行提供的住房贷款，利率相对较高，适用于公积金贷款额度不足或不符合公积金贷款条件的购房者。</p>
+            <p><strong>公积金贷款：</strong>使用住房公积金账户余额进行的贷款，利率较低，适用于已缴纳住房公积金且符合贷款条件的购房者。</p>
+            <p><strong>组合贷款：</strong>同时使用商业贷款和公积金贷款的组合方式，适用于公积金贷款额度不足以支付全部房款的购房者，可以享受公积金贷款的低利率优势。</p>
+
             <h4>还款方式比较</h4>
             <p><strong>等额本息：</strong>每月还款额固定，前期利息占比较高，本金占比较低；随着还款期限推进，利息占比逐渐降低，本金占比逐渐升高。这种方式适合收入稳定、希望每月还款压力均衡的购房者。</p>
             <p><strong>等额本金：</strong>每月还款本金固定，利息逐月递减，因此每月总还款额呈递减趋势。前期还款压力较大，但总利息支出较等额本息少，适合前期还款能力较强、希望减少总利息支出的购房者。</p>
-            
+
+            <h4>还款计划明细</h4>
+            <p>计算完成后，点击"还款计划明细"按钮可查看详细的还款计划。还款计划以弹出层形式展示，支持分页浏览，每页可显示10、20、50或100条记录。对于组合贷款，还可以分别查看合计明细、商业贷款明细和公积金贷款明细。还款计划包含每期的期数、月供金额、本金、利息和剩余本金等详细信息。</p>
+
             <h4>计算注意事项</h4>
             <ul>
                 <li>贷款总额：指实际贷款金额，单位为万元（如贷款100万则输入100）</li>
                 <li>年利率：请输入银行实际执行的贷款利率，一般为基准利率上下浮动</li>
                 <li>贷款年限：最长不超过30年，不同银行和贷款类型可能有不同限制</li>
+                <li>组合贷款：商业贷款和公积金贷款的年限可以不同</li>
+                <li>还款计划明细按钮仅在计算完成后可用</li>
                 <li>计算结果仅供参考，实际还款金额可能因银行政策、还款方式调整等因素有所不同</li>
             </ul>
         </div>
@@ -417,12 +531,19 @@
             </div>
         </div>
         <button class="btn" onclick="convertCurrency()">转换</button>
+        <button class="btn btn-reset" onclick="resetCurrency()">重置</button>
         <div id="currencyResult" class="result" style="display: none;"></div>
         <div id="currencyLoading" class="currency-loading" style="display: none;">加载汇率数据中...</div>
+
+        <!-- 汇率转换广告位 -->
+        <div class="adsense-ad ad-currency">
+            <!-- AdSense广告代码将放置在此处 -->
+        </div>
+
         <div class="module-description">
             <h3>汇率转换功能说明</h3>
             <p>本工具提供实时货币汇率转换服务，支持全球多种主要货币之间的快速转换，帮助用户了解不同货币之间的兑换比率，适用于旅行、国际贸易、跨境电商等场景。</p>
-            
+
             <h4>使用方法</h4>
             <ul>
                 <li>输入要转换的货币金额</li>
@@ -430,7 +551,7 @@
                 <li>选择目标货币（转换为哪个货币）</li>
                 <li>点击转换按钮获取实时转换结果</li>
             </ul>
-            
+
             <h4>注意事项</h4>
             <ul>
                 <li>汇率数据可能会实时更新，具体以实际交易时的汇率为准</li>
@@ -447,11 +568,18 @@
             <input type="number" id="numberInput" placeholder="输入金额" step="0.01">
         </div>
         <button class="btn" onclick="convertToChineseNumber()">转换为大写</button>
+        <button class="btn btn-reset" onclick="resetChineseNumber()">重置</button>
         <div id="chineseNumberResult" class="result" style="display: none;"></div>
+
+        <!-- 大写数字转换广告位 -->
+        <div class="adsense-ad ad-chinese-number">
+            <!-- AdSense广告代码将放置在此处 -->
+        </div>
+
         <div class="module-description">
             <h3>大写数字转换功能说明</h3>
             <p>本工具将阿拉伯数字转换为中文大写数字，适用于财务、会计、合同、发票等正式场合，确保数字表述的准确性和规范性，避免篡改和误解。</p>
-            
+
             <h4>适用场景</h4>
             <ul>
                 <li>财务凭证和发票的金额大写填写</li>
@@ -459,7 +587,7 @@
                 <li>银行支票和汇票的填写</li>
                 <li>其他需要正式、规范数字表述的场合</li>
             </ul>
-            
+
             <h4>转换规则</h4>
             <ul>
                 <li>支持整数和小数转换，小数部分转换为"角"和"分"</li>
@@ -503,6 +631,7 @@
                     </select>
                 </div>
                 <button class="btn" onclick="convertLength()">转换</button>
+                <button class="btn btn-reset" onclick="resetLength()">重置</button>
                 <div id="lengthResult" class="result" style="display: none;"></div>
             </div>
 
@@ -534,6 +663,7 @@
                     </select>
                 </div>
                 <button class="btn" onclick="convertArea()">转换</button>
+                <button class="btn btn-reset" onclick="resetArea()">重置</button>
                 <div id="areaResult" class="result" style="display: none;"></div>
             </div>
 
@@ -563,6 +693,7 @@
                     </select>
                 </div>
                 <button class="btn" onclick="convertVolume()">转换</button>
+                <button class="btn btn-reset" onclick="resetVolume()">重置</button>
                 <div id="volumeResult" class="result" style="display: none;"></div>
             </div>
 
@@ -592,6 +723,7 @@
                     </select>
                 </div>
                 <button class="btn" onclick="convertWeight()">转换</button>
+                <button class="btn btn-reset" onclick="resetWeight()">重置</button>
                 <div id="weightResult" class="result" style="display: none;"></div>
             </div>
 
@@ -615,6 +747,7 @@
                     </select>
                 </div>
                 <button class="btn" onclick="convertTemperature()">转换</button>
+                <button class="btn btn-reset" onclick="resetTemperature()">重置</button>
                 <div id="tempResult" class="result" style="display: none;"></div>
             </div>
 
@@ -644,6 +777,7 @@
                     </select>
                 </div>
                 <button class="btn" onclick="convertPressure()">转换</button>
+                <button class="btn btn-reset" onclick="resetPressure()">重置</button>
                 <div id="pressureResult" class="result" style="display: none;"></div>
             </div>
 
@@ -677,6 +811,7 @@
                     </select>
                 </div>
                 <button class="btn" onclick="convertTime()">转换</button>
+                <button class="btn btn-reset" onclick="resetTime()">重置</button>
                 <div id="timeResult" class="result" style="display: none;"></div>
             </div>
 
@@ -702,6 +837,7 @@
                     </select>
                 </div>
                 <button class="btn" onclick="convertSpeed()">转换</button>
+                <button class="btn btn-reset" onclick="resetSpeed()">重置</button>
                 <div id="speedResult" class="result" style="display: none;"></div>
             </div>
 
@@ -727,13 +863,14 @@
                     </select>
                 </div>
                 <button class="btn" onclick="convertPower()">转换</button>
+                <button class="btn btn-reset" onclick="resetPower()">重置</button>
                 <div id="powerResult" class="result" style="display: none;"></div>
             </div>
         </div>
         <div class="module-description">
             <h3>单位转换功能说明</h3>
             <p>本工具提供多种常用物理量的单位转换功能，支持国际单位制（SI）和英美制单位之间的快速转换，适用于日常生活、学习和工作中的各种场景。</p>
-            
+
             <h4>转换类别说明</h4>
             <p><strong>长度转换：</strong>支持毫米、厘米、米、千米、英寸、英尺、码、英里等长度单位的转换，适用于测量、建筑、旅行等场景。</p>
             <p><strong>面积转换：</strong>支持平方米、平方厘米、平方千米、英亩、公顷、平方英尺、平方英寸等面积单位的转换，适用于房地产、土地测量、工程设计等场景。</p>
@@ -744,7 +881,7 @@
             <p><strong>时间转换：</strong>支持毫秒、秒、分钟、小时、天、周、月、年等时间单位的转换，适用于时间管理、项目规划、科学研究等场景。</p>
             <p><strong>速度转换：</strong>支持米/秒、千米/小时、英里/小时、节等速度单位的转换，适用于交通、运动、航空航海等场景。</p>
             <p><strong>功率转换：</strong>支持瓦特、千瓦、马力、公制马力等功率单位的转换，适用于工程、机械、能源等场景。</p>
-            
+
             <h4>使用方法</h4>
             <ul>
                 <li>选择需要转换的物理量类别（如长度、重量等）</li>
@@ -765,7 +902,6 @@
                         <input type="text" id="binaryInput" placeholder="输入数字">
                     </div>
                     <div class="input-group">
-                        <label>从进制</label>
                         <select id="fromBase">
                             <option value="2">二进制</option>
                             <option value="8">八进制</option>
@@ -774,7 +910,6 @@
                         </select>
                     </div>
                     <div class="input-group">
-                        <label>到进制</label>
                         <select id="toBase">
                             <option value="10">十进制</option>
                             <option value="2">二进制</option>
@@ -783,6 +918,7 @@
                         </select>
                     </div>
                     <button class="btn" onclick="convertBase()">转换</button>
+                    <button class="btn btn-reset" onclick="resetBase()">重置</button>
                     <div id="baseResult" class="result" style="display: none;"></div>
                 </div>
             </div>
@@ -813,17 +949,24 @@
                     </select>
                 </div>
                 <button class="btn" onclick="convertData()">转换</button>
+                <button class="btn btn-reset" onclick="resetData()">重置</button>
                 <div id="dataResult" class="result" style="display: none;"></div>
             </div>
         </div>
+
+        <!-- 程序员工具广告位 -->
+        <div class="adsense-ad ad-advanced">
+            <!-- AdSense广告代码将放置在此处 -->
+        </div>
+
         <div class="module-description">
             <h3>程序员工具功能说明</h3>
             <p>本工具集合了程序员在日常开发中常用的转换功能，帮助开发者提高工作效率，减少手动计算和转换的错误。</p>
-            
+
             <h4>工具类别说明</h4>
             <p><strong>进制转换：</strong>支持二进制、八进制、十进制、十六进制之间的相互转换，适用于编程、硬件开发、数据处理等场景。</p>
             <p><strong>数据转换：</strong>支持字节、千字节、兆字节、吉字节、太字节、拍字节等数据存储单位的转换，适用于文件大小计算、存储容量规划等场景。</p>
-            
+
             <h4>使用方法</h4>
             <ul>
                 <li>选择需要的工具类别（如进制转换、数据转换）</li>
@@ -845,14 +988,21 @@
             <input type="number" id="weight" placeholder="例如: 70">
         </div>
         <button class="btn" onclick="calculateBMI()">计算BMI</button>
-        <div id="bmiResult" class="result" style="display: none;"></div>
+        <button class="btn btn-reset" onclick="resetBMI()">重置</button>
+        <div id="bmiResult" class="result" style="display: block;"></div>
+
+        <!-- BMI计算器广告位 -->
+        <div class="adsense-ad ad-bmi">
+            <!-- AdSense广告代码将放置在此处 -->
+        </div>
+
         <div class="module-description">
             <h3>BMI计算功能说明</h3>
             <p>BMI（Body Mass Index，身体质量指数）是国际上常用的衡量人体胖瘦程度以及是否健康的一个标准。本工具通过身高和体重数据计算BMI值，并提供相应的健康评估建议。</p>
-            
+
             <h4>计算公式</h4>
             <p>BMI = 体重(kg) ÷ 身高(m)的平方</p>
-            
+
             <h4>BMI标准范围</h4>
             <ul>
                 <li>偏瘦：BMI &lt; 18.5</li>
@@ -860,7 +1010,7 @@
                 <li>超重：24 ≤ BMI &lt; 28</li>
                 <li>肥胖：BMI ≥ 28</li>
             </ul>
-            
+
             <h4>注意事项</h4>
             <ul>
                 <li>BMI是一个参考指标，不能完全代表健康状况</li>
@@ -870,6 +1020,56 @@
             </ul>
         </div>
     </div>
+
+    <div id="about" class="calculator-section">
+        <h2>关于本站</h2>
+        <div class="about-content">
+            <div class="about-section">
+                <h3>网站简介</h3>
+                <p>多功能计算器是一个集成了多种实用计算工具的在线平台，旨在为用户提供便捷、高效的计算服务。无论您是需要计算个人所得税、房贷还款，还是需要进行货币汇率转换、单位换算，本站都能满足您的需求。</p>
+            </div>
+
+            <div class="about-section">
+                <h3>功能特点</h3>
+                <ul class="feature-list">
+                    <li><strong>个税计算：</strong>支持工资薪金和年终奖两种计税方式，包含专项附加扣除和五险一金计算</li>
+                    <li><strong>房贷计算：</strong>提供等额本息和等额本金两种还款方式，可生成详细还款计划</li>
+                    <li><strong>汇率转换：</strong>支持全球多种主要货币的实时汇率转换</li>
+                    <li><strong>大写数字转换：</strong>将阿拉伯数字转换为中文大写数字，适用于财务、合同等正式场合</li>
+                    <li><strong>单位转换：</strong>提供长度、面积、体积、重量、温度、压强、时间、速度、功率等多种物理量的单位转换</li>
+                    <li><strong>BMI计算器：</strong>根据身高体重计算身体质量指数，提供健康评估建议</li>
+                    <li><strong>程序员工具：</strong>提供进制转换、数据存储单位转换等开发者常用工具</li>
+                </ul>
+            </div>
+
+            <div class="about-section">
+                <h3>使用说明</h3>
+                <p>本站所有功能均免费使用，无需注册登录。只需选择相应的功能标签，输入相关数据，点击计算按钮即可获得结果。所有计算结果仅供参考，实际数值请以相关机构或银行等官方渠道为准。</p>
+            </div>
+
+            <div class="about-section">
+                <h3>技术说明</h3>
+                <p>本站采用现代化的Web技术构建，界面简洁美观，响应式设计适配各种设备。所有计算均在本地浏览器完成，确保您的数据安全。我们持续优化用户体验，定期更新功能和修复问题。</p>
+            </div>
+
+            <div class="about-section">
+                <h3>联系我们</h3>
+                <p>如果您在使用过程中遇到任何问题，或有任何建议和意见，欢迎通过以下方式联系我们：</p>
+                <p><strong>客服邮箱：</strong>muchennianying@gmail.com</p>
+                <p>我们会尽快回复您的邮件，感谢您的支持与反馈！</p>
+            </div>
+
+            <div class="about-section">
+                <h3>免责声明</h3>
+                <p>本站提供的计算结果仅供参考，不构成任何投资、医疗、法律等专业建议。实际结果可能因各种因素而有所不同，请以官方渠道或专业人士的意见为准。本站不对因使用本站信息而导致的任何损失承担责任。</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <p>资源来源于网络，如有侵权，请联系客服予以删除！客服Email: muchennianying@gmail.com</p>
+    <p class="copyright">© 2019 - 2026</p>
 </div>
 
 <script src="script.js"></script>

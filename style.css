@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: white;
     min-height: 100vh;
     padding: 20px;
 }
@@ -21,7 +21,7 @@ body {
 }
 
 .header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #667eea;
     color: white;
     padding: 20px;
     text-align: center;
@@ -93,7 +93,7 @@ body {
 }
 
 .btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #667eea;
     color: white;
     border: none;
     padding: 12px 24px;
@@ -106,6 +106,146 @@ body {
 
 .btn:hover {
     transform: translateY(-2px);
+}
+
+.btn-reset {
+    background: #95a5a6;
+    margin-left: 10px;
+}
+
+.btn-reset:hover {
+    background: #7f8c8d;
+}
+
+.btn-schedule {
+    background: #667eea;
+    margin-left: 10px;
+}
+
+.btn-schedule:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-schedule:hover:not(:disabled) {
+    background: #5568d3;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
+.modal-body {
+    overflow-x: auto;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-top: 1px solid #eee;
+    flex-shrink: 0;
+    min-height: 60px;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 20px;
+}
+
+#pageInfo {
+    min-width: 140px;
+    text-align: center;
+    display: inline-block;
+}
+
+.pagination-input {
+    width: 60px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.pagination-select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: white;
+    cursor: pointer;
+}
+
+.btn-pagination {
+    padding: 8px 16px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-pagination:hover:not(:disabled) {
+    background: #5568d3;
+}
+
+.btn-pagination:disabled {
+    background: #ccc;
+    cursor: not-allowed;
 }
 
 .result {
@@ -180,36 +320,56 @@ body {
 }
 
 .mortgage-calculator {
-    max-width: 600px;
-    margin: 0 auto;
+    width: 100%;
+}
+
+.loan-section {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: #f8f9fa;
+}
+
+.loan-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    color: #495057;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 10px;
 }
 
 .tax-calculator {
-    max-width: 700px;
-    margin: 0 auto;
+    width: 100%;
 }
 
-.mortgage-schedule {
-    margin-top: 20px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #667eea;
+.combination-schedule-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
 }
 
-.mortgage-schedule h3 {
-    margin-bottom: 15px;
-    color: #333;
-    font-size: 1.2em;
+.btn-combination {
+    flex: 1;
+    padding: 8px 15px;
+    background: #fff;
+    border: 2px solid #667eea;
+    color: #667eea;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
 }
 
-.schedule-controls {
-    margin-bottom: 15px;
+.btn-combination:hover {
+    background: #667eea;
+    color: white;
 }
 
-.schedule-content {
-    overflow-x: auto;
-    margin-top: 15px;
+.btn-combination.active {
+    background: #667eea;
+    color: white;
 }
 
 .schedule-table {
@@ -224,15 +384,16 @@ body {
 .schedule-table th,
 .schedule-table td {
     padding: 12px 10px;
-    text-align: right;
+    text-align: center;
     border-bottom: 1px solid #eee;
 }
 
 .schedule-table th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #667eea;
     color: white;
     font-weight: 500;
     white-space: nowrap;
+    text-align: center;
 }
 
 .schedule-table tr:hover {
@@ -253,8 +414,7 @@ body {
 }
 
 .bmi-calculator {
-    max-width: 500px;
-    margin: 0 auto;
+    width: 100%;
 }
 
 .tax-deduction-item {
@@ -311,16 +471,36 @@ body {
     border-color: #667eea;
 }
 
+.loan-type-options {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.loan-type-option {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.loan-type-option.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
 .tax-notes {
     margin-top: 30px;
     padding: 20px;
     background: #f9f9f9;
     border-radius: 8px;
-    border-left: 4px solid #28a745;
+    border-left: 4px solid #667eea;
 }
 
 .tax-notes h3 {
-    color: #28a745;
+    color: #333;
     margin-bottom: 10px;
 }
 
@@ -338,6 +518,23 @@ body {
 
 .tax-notes table th {
     background-color: #f2f2f2;
+}
+
+.deduction-section,
+.insurance-section {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: #f8f9fa;
+}
+
+.deduction-section h3,
+.insurance-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    color: #495057;
 }
 
 .deduction-grid {
@@ -389,9 +586,21 @@ body {
 }
 
 .deduction-row .input-group input[type="number"] {
-    width: 100px;
+    width: 120px;
     padding: 8px;
     flex-shrink: 0;
+}
+
+.deduction-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.deduction-buttons .btn-small {
+    padding: 8px 16px;
+    font-size: 14px;
 }
 
 /* 搜索可选择的下拉菜单样式 */
@@ -574,4 +783,79 @@ body {
         padding: 10px 20px;
         font-size: 14px;
     }
+    
+    .about-section {
+        padding: 15px;
+    }
+    
+    .about-section h3 {
+        font-size: 1.1em;
+    }
+    
+    .feature-list li {
+        padding: 8px 0;
+    }
+}
+
+.footer {
+    background: white;
+    color: #333;
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.footer p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.footer .copyright {
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+.about-content {
+    padding: 20px 0;
+}
+
+.about-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+}
+
+.about-section h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+.about-section p {
+    line-height: 1.8;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-list li {
+    padding: 10px 0;
+    line-height: 1.8;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.feature-list li:last-child {
+    border-bottom: none;
+}
+
+.feature-list strong {
+    color: #667eea;
 }
