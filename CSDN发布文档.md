@@ -15,7 +15,9 @@
 
 ## 🚀 在线体验
 
-**项目地址**：https://mcny.dpdns.org
+**项目地址**：https://calculator.de5.net
+
+**备用地址**：https://mcny.dpdns.org
 
 > 💡 提示：建议使用Chrome浏览器访问以获得最佳体验
 
@@ -428,6 +430,8 @@ npm run deploy
 
 **如果觉得这个项目对你有帮助，欢迎给个 ⭐ Star 支持一下！**
 
-**项目地址**：https://mcny.dpdns.org
+**项目地址**：https://calculator.de5.net
+
+**备用地址**：https://mcny.dpdns.org
 
 **GitHub地址**：https://github.com/MuchenNianying/calculator

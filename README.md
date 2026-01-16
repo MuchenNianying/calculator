@@ -4,7 +4,9 @@
 
 ## 在线访问
 
-🌐 **访问地址**：https://mcny.dpdns.org
+🌐 **访问地址**：https://calculator.de5.net
+
+🌐 **备用地址**：https://mcny.dpdns.org
 
 ## 功能特性
 
