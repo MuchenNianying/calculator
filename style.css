@@ -388,6 +388,16 @@ body {
     border-bottom: 1px solid #eee;
 }
 
+.schedule-table th:first-child,
+.schedule-table td:first-child {
+    text-align: left;
+}
+
+.schedule-table th:last-child,
+.schedule-table td:last-child {
+    text-align: right;
+}
+
 .schedule-table th {
     background: #667eea;
     color: white;
@@ -669,10 +679,10 @@ body {
 
 /* 模块说明样式 */
 .module-description {
-    margin-bottom: 30px;
+    margin: 30px 0;
     padding: 20px;
-    background: #f8f9fa;
-    border-radius: 10px;
+    background: #f9f9f9;
+    border-radius: 8px;
     border-left: 4px solid #667eea;
 }
 
@@ -706,18 +716,6 @@ body {
 }
 
 /* 广告位样式 */
-.adsense-ad {
-    margin: 20px 0;
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    text-align: center;
-    min-height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .ad-top {
     margin: 0;
     border-radius: 0;

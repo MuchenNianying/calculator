@@ -149,7 +149,7 @@ const fallbackExchangeRates = {
     'TZS': 360,
     'UAH': 5.95,
     'UGX': 530,
-    'USD': 0.142953,
+    'USD': 0.14326,
     'UYU': 5.85,
     'UZS': 1750,
     'VEF': 1.5,
@@ -456,15 +456,15 @@ function convertCurrency() {
     }
 
     // 汇率转换逻辑：通过人民币作为中间货币
-    // 1单位from货币 = exchangeRates[from]人民币
-    // 1人民币 = 1/exchangeRates[to]单位to货币
-    // 所以 1单位from货币 = exchangeRates[from]/exchangeRates[to]单位to货币
+    // 汇率数据格式：1人民币 = exchangeRates[currency]单位该货币
+    // 例如：1人民币 = 0.14326美元，即1美元 = 1/0.14326 = 6.979780人民币
+    // 转换公式：amount * (toRate / fromRate)
     const fromRate = exchangeRates[from];
     const toRate = exchangeRates[to];
-    const result = amount * (fromRate / toRate);
+    const result = amount * (toRate / fromRate);
 
     document.getElementById('currencyResult').innerHTML =
-        `${amount} ${from} = ${result.toFixed(4)} ${to} (汇率: 1 ${from} = ${(fromRate / toRate).toFixed(6)} ${to})`;
+        `${amount} ${from} = ${result.toFixed(4)} ${to} (汇率: 1 ${from} = ${(toRate / fromRate).toFixed(6)} ${to})`;
     document.getElementById('currencyResult').style.display = 'block';
 }
 
@@ -642,6 +642,8 @@ function calculateMortgage() {
     if (loanType === 'combination') {
         const commercialYears = parseInt(document.getElementById('commercialYears').value);
         const providentYears = parseInt(document.getElementById('providentYears').value);
+        const commercialRepaymentType = document.getElementById('commercialRepaymentType').value;
+        const providentRepaymentType = document.getElementById('providentRepaymentType').value;
         const commercialTotalMonths = commercialYears * 12;
         const providentTotalMonths = providentYears * 12;
         
@@ -764,6 +766,9 @@ function calculateMortgage() {
             });
         }
         
+        // 计算首月月供（用于等额本金显示）
+        const firstMonthPayment = (commercialScheduleData[0]?.payment || 0) + (providentScheduleData[0]?.payment || 0);
+        
         resultHTML = `
             <h3>组合贷款计算结果</h3>
             <table class="schedule-table">
@@ -779,11 +784,21 @@ function calculateMortgage() {
                         <td>¥${loanAmountTotal.toLocaleString()}</td>
                     </tr>
                     <tr>
+                        <td>贷款类型</td>
+                        <td>组合贷款</td>
+                    </tr>
+                    <tr>
                         <td>还款方式</td>
                         <td>商业贷款：${commercialRepaymentType === 'equal' ? '等额本息' : '等额本金'}，公积金贷款：${providentRepaymentType === 'equal' ? '等额本息' : '等额本金'}</td>
                     </tr>
+                    ${(commercialRepaymentType === 'decreasing' || providentRepaymentType === 'decreasing') ? `
                     <tr>
-                        <td>月供</td>
+                        <td>首月月供</td>
+                        <td>¥${monthlyPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}（逐月递减）</td>
+                    </tr>
+                    ` : ''}
+                    <tr>
+                        <td>${(commercialRepaymentType === 'equal' && providentRepaymentType === 'equal') ? '月供' : '平均月供'}</td>
                         <td>¥${monthlyPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
                     </tr>
                     <tr>
@@ -822,8 +837,14 @@ function calculateMortgage() {
                         <td>商业贷款还款方式</td>
                         <td>${commercialRepaymentType === 'equal' ? '等额本息' : '等额本金'}</td>
                     </tr>
+                    ${commercialRepaymentType === 'decreasing' ? `
                     <tr>
-                        <td>商业贷款月供</td>
+                        <td>商业贷款首月月供</td>
+                        <td>¥${commercialScheduleData[0]?.payment.toLocaleString(undefined, {maximumFractionDigits: 2})}（逐月递减）</td>
+                    </tr>
+                    ` : ''}
+                    <tr>
+                        <td>${commercialRepaymentType === 'equal' ? '商业贷款月供' : '商业贷款平均月供'}</td>
                         <td>¥${commercialMonthlyPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
                     </tr>
                     <tr>
@@ -862,8 +883,14 @@ function calculateMortgage() {
                         <td>公积金贷款还款方式</td>
                         <td>${providentRepaymentType === 'equal' ? '等额本息' : '等额本金'}</td>
                     </tr>
+                    ${providentRepaymentType === 'decreasing' ? `
                     <tr>
-                        <td>公积金贷款月供</td>
+                        <td>公积金贷款首月月供</td>
+                        <td>¥${providentScheduleData[0]?.payment.toLocaleString(undefined, {maximumFractionDigits: 2})}（逐月递减）</td>
+                    </tr>
+                    ` : ''}
+                    <tr>
+                        <td>${providentRepaymentType === 'equal' ? '公积金贷款月供' : '公积金贷款平均月供'}</td>
                         <td>¥${providentMonthlyPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
                     </tr>
                     <tr>
@@ -927,11 +954,11 @@ function calculateMortgage() {
         totalInterest = totalPayment - loanAmountTotal;
 
         let firstMonthInterest = '';
-        if (repaymentType === 'equal' && mortgageScheduleData.length > 0) {
+        if (repaymentType === 'decreasing' && mortgageScheduleData.length > 0) {
             firstMonthInterest = `
                 <tr>
-                    <td>首月利息</td>
-                    <td>¥${mortgageScheduleData[0].interest.toLocaleString(undefined, {maximumFractionDigits: 2})}（逐月递减）</td>
+                    <td>首月月供</td>
+                    <td>¥${mortgageScheduleData[0].payment.toLocaleString(undefined, {maximumFractionDigits: 2})}（逐月递减）</td>
                 </tr>
             `;
         }
@@ -951,11 +978,16 @@ function calculateMortgage() {
                         <td>¥${loanAmountTotal.toLocaleString()}</td>
                     </tr>
                     <tr>
+                        <td>贷款类型</td>
+                        <td>${loanType === 'commercial' ? '商业贷款' : loanType === 'provident' ? '公积金贷款' : '组合贷款'}</td>
+                    </tr>
+                    <tr>
                         <td>还款方式</td>
                         <td>${repaymentType === 'equal' ? '等额本息' : '等额本金'}</td>
                     </tr>
+                    ${firstMonthInterest}
                     <tr>
-                        <td>月供</td>
+                        <td>${repaymentType === 'equal' ? '月供' : '平均月供'}</td>
                         <td>¥${monthlyPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
                     </tr>
                     <tr>
@@ -970,7 +1002,6 @@ function calculateMortgage() {
                         <td>还款月数</td>
                         <td>${totalMonths} 个月</td>
                     </tr>
-                    ${firstMonthInterest}
                 </tbody>
             </table>
         `;
@@ -2693,6 +2724,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 初始化所有结果表格为空表格
     initializeResultTables();
+
+    // 添加组合贷款还款方式切换事件监听
+    const commercialRepaymentType = document.getElementById('commercialRepaymentType');
+    const providentRepaymentType = document.getElementById('providentRepaymentType');
+    
+    if (commercialRepaymentType) {
+        commercialRepaymentType.addEventListener('change', function() {
+            const scheduleBtn = document.getElementById('scheduleBtn');
+            if (!scheduleBtn.disabled) {
+                calculateMortgage();
+            }
+        });
+    }
+    
+    if (providentRepaymentType) {
+        providentRepaymentType.addEventListener('change', function() {
+            const scheduleBtn = document.getElementById('scheduleBtn');
+            if (!scheduleBtn.disabled) {
+                calculateMortgage();
+            }
+        });
+    }
 });
 
 function initializeResultTables() {
