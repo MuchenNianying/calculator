@@ -2,6 +2,7 @@ import indexHtml from '../index.html';
 import styleCss from '../style.css';
 import scriptJs from '../script.js';
 import adsTxt from './ads.txt';
+import sitemapXml from './sitemap.xml';
 
 
 export default {
@@ -53,6 +54,14 @@ export default {
                 return new Response(adsTxt, {
                     headers: {
                         'Content-Type': 'text/plain',
+                    },
+                });
+            }
+            // Serve sitemap.xml file
+            if (path === '/sitemap.xml') {
+                return new Response(sitemapXml, {
+                    headers: {
+                        'Content-Type': 'application/xml',
                     },
                 });
             }
