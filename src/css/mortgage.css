@@ -1,0 +1,60 @@
+.mortgage-calculator {
+    width: 100%;
+}
+
+.loan-section {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: #f8f9fa;
+}
+
+.loan-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    color: #495057;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 10px;
+}
+
+.loan-type-options {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.loan-type-option {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.loan-type-option.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.btn-schedule {
+    background: #667eea;
+    margin-left: 10px;
+}
+
+.btn-schedule:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-schedule:hover:not(:disabled) {
+    background: #5568d3;
+}
+
+@media (max-width: 768px) {
+    .loan-section {
+        margin-bottom: 20px;
+    }
+}
