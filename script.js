@@ -1165,6 +1165,20 @@ function toggleInsuranceCalcType() {
 }
 
 // 个税计算功能
+function toggleIncomeCalcType() {
+    const calcType = document.getElementById('incomeCalcType').value;
+    const monthlyInput = document.getElementById('monthlyIncomeInput');
+    const yearlyInput = document.getElementById('yearlyIncomeInput');
+    
+    if (calcType === 'monthly') {
+        monthlyInput.style.display = 'block';
+        yearlyInput.style.display = 'none';
+    } else {
+        monthlyInput.style.display = 'none';
+        yearlyInput.style.display = 'block';
+    }
+}
+
 function switchTaxMode(mode) {
     const salaryTax = document.getElementById('salaryTax');
     const bonusTax = document.getElementById('bonusTax');
@@ -1323,6 +1337,16 @@ function calculateTax() {
 }
 
 function calculateSalaryTax() {
+    const incomeCalcType = document.getElementById('incomeCalcType').value;
+    
+    if (incomeCalcType === 'monthly') {
+        calculateMonthlySalaryTax();
+    } else {
+        calculateYearlySalaryTax();
+    }
+}
+
+function calculateMonthlySalaryTax() {
     const monthlyIncome = parseFloat(document.getElementById('monthlyIncome').value);
     const currentMonth = parseInt(document.getElementById('currentMonth').value);
 
@@ -1397,13 +1421,11 @@ function calculateSalaryTax() {
         cumulativeIncome += monthlyIncome;
         cumulativeInsurance += monthlyInsuranceDeduction;
         cumulativeDeduction += deductionTotal;
-        cumulativeThreshold += 5000; // 每月5000的减除费用
+        cumulativeThreshold += 5000;
     }
 
-    // 应纳税所得额 = 累计收入 - 累计五险一金 - 累计专项附加扣除 - 累计减除费用
     const cumulativeTaxableIncome = Math.max(0, cumulativeIncome - cumulativeInsurance - cumulativeDeduction - cumulativeThreshold);
 
-    // 确定税率和速算扣除数
     let taxRate, quickDeduction;
     if (cumulativeTaxableIncome <= 36000) {
         taxRate = 0.03;
@@ -1430,9 +1452,6 @@ function calculateSalaryTax() {
 
     const cumulativeTax = cumulativeTaxableIncome * taxRate - quickDeduction;
 
-    // 计算当月应纳税额（需要累计已缴税额，这里假设为0或上月累计税额）
-    // 简化计算：假设每月收入相同，且无前期累计税额
-    // 实际应用中，cumulativeTaxPrevMonth 需要从历史记录中获取
     let cumulativeTaxPrevMonth = 0;
     for (let month = 1; month < currentMonth; month++) {
         let prevCumulativeIncome = monthlyIncome * month;
@@ -1540,6 +1559,169 @@ function calculateSalaryTax() {
                     <tr>
                         <td>税后收入(月)</td>
                         <td>¥${netIncome.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+}
+
+function calculateYearlySalaryTax() {
+    const yearlyIncome = parseFloat(document.getElementById('yearlyIncome').value);
+
+    let deductionTotal = 0;
+    if (document.getElementById('childEdu').checked) {
+        deductionTotal += parseFloat(document.getElementById('childEduAmount').value) || 0;
+    }
+    if (document.getElementById('continueEdu').checked) {
+        deductionTotal += parseFloat(document.getElementById('continueEduAmount').value) || 0;
+    }
+    if (document.getElementById('medical').checked) {
+        const medicalAmount = parseFloat(document.getElementById('medicalAmount').value) || 0;
+        deductionTotal += Math.min(medicalAmount, 80000);
+    }
+    if (document.getElementById('mortgageInterest').checked) {
+        deductionTotal += parseFloat(document.getElementById('mortgageInterestAmount').value) || 0;
+    }
+    if (document.getElementById('rent').checked) {
+        deductionTotal += parseFloat(document.getElementById('rentAmount').value) || 0;
+    }
+    if (document.getElementById('supportElderly').checked) {
+        deductionTotal += parseFloat(document.getElementById('supportElderlyAmount').value) || 0;
+    }
+    if (document.getElementById('infantCare').checked) {
+        deductionTotal += parseFloat(document.getElementById('infantCareAmount').value) || 0;
+    }
+
+    const yearlyDeduction = deductionTotal * 12;
+
+    const insuranceCalcType = document.getElementById('insuranceCalcType').value;
+    let yearlyInsuranceDeduction;
+    
+    if (insuranceCalcType === 'rate') {
+        const housingFundRate = parseFloat(document.getElementById('housingFundRate').value) || 0;
+        const medicalRate = parseFloat(document.getElementById('medicalRate').value) || 0;
+        const pensionRate = parseFloat(document.getElementById('pensionRate').value) || 0;
+        const unemploymentRate = parseFloat(document.getElementById('unemploymentRate').value) || 0;
+        const injuryRate = parseFloat(document.getElementById('injuryRate').value) || 0;
+        const maternityRate = parseFloat(document.getElementById('maternityRate').value) || 0;
+
+        const totalInsuranceRate = housingFundRate + medicalRate + pensionRate + unemploymentRate + injuryRate + maternityRate;
+        yearlyInsuranceDeduction = yearlyIncome * totalInsuranceRate / 100;
+    } else {
+        const housingFundAmount = parseFloat(document.getElementById('housingFundAmount').value) || 0;
+        const medicalInsuranceAmount = parseFloat(document.getElementById('medicalInsuranceAmount').value) || 0;
+        const pensionAmount = parseFloat(document.getElementById('pensionAmount').value) || 0;
+        const unemploymentAmount = parseFloat(document.getElementById('unemploymentAmount').value) || 0;
+        const injuryAmount = parseFloat(document.getElementById('injuryAmount').value) || 0;
+        const maternityAmount = parseFloat(document.getElementById('maternityAmount').value) || 0;
+
+        yearlyInsuranceDeduction = (housingFundAmount + medicalInsuranceAmount + pensionAmount + unemploymentAmount + injuryAmount + maternityAmount) * 12;
+    }
+
+    if (isNaN(yearlyIncome) || yearlyIncome <= 0) {
+        alert('请输入有效的年收入');
+        return;
+    }
+
+    const yearlyThreshold = 5000 * 12;
+
+    const taxableIncome = Math.max(0, yearlyIncome - yearlyInsuranceDeduction - yearlyDeduction - yearlyThreshold);
+
+    let taxRate, quickDeduction;
+    if (taxableIncome <= 36000) {
+        taxRate = 0.03;
+        quickDeduction = 0;
+    } else if (taxableIncome <= 144000) {
+        taxRate = 0.10;
+        quickDeduction = 2520;
+    } else if (taxableIncome <= 300000) {
+        taxRate = 0.20;
+        quickDeduction = 16920;
+    } else if (taxableIncome <= 420000) {
+        taxRate = 0.25;
+        quickDeduction = 31920;
+    } else if (taxableIncome <= 660000) {
+        taxRate = 0.30;
+        quickDeduction = 52920;
+    } else if (taxableIncome <= 960000) {
+        taxRate = 0.35;
+        quickDeduction = 85920;
+    } else {
+        taxRate = 0.45;
+        quickDeduction = 181920;
+    }
+
+    const yearlyTax = taxableIncome * taxRate - quickDeduction;
+    const netIncome = yearlyIncome - yearlyTax - yearlyInsuranceDeduction;
+    const avgMonthlyIncome = yearlyIncome / 12;
+    const avgMonthlyTax = yearlyTax / 12;
+    const avgMonthlyNet = netIncome / 12;
+
+    document.getElementById('taxResult').innerHTML = `
+            <h3>工资薪金个税计算结果（年收入）</h3>
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>项目</th>
+                        <th>数值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>年收入总额</td>
+                        <td>¥${yearlyIncome.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>月均收入</td>
+                        <td>¥${avgMonthlyIncome.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>专项附加扣除（月）</td>
+                        <td>¥${deductionTotal.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>专项附加扣除（年）</td>
+                        <td>¥${yearlyDeduction.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>五险一金扣除（年）</td>
+                        <td>¥${yearlyInsuranceDeduction.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>减除费用（年）</td>
+                        <td>¥${yearlyThreshold.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>应纳税所得额</td>
+                        <td>¥${taxableIncome.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>适用税率</td>
+                        <td>${(taxRate * 100).toFixed(1)}%</td>
+                    </tr>
+                    <tr>
+                        <td>速算扣除数</td>
+                        <td>¥${quickDeduction.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td>全年应纳税额</td>
+                        <td>¥${yearlyTax.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>月均个税</td>
+                        <td>¥${avgMonthlyTax.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>税后年收入</td>
+                        <td>¥${netIncome.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>税后月均收入</td>
+                        <td>¥${avgMonthlyNet.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                        <td>实际税负率</td>
+                        <td>${(yearlyTax / yearlyIncome * 100).toFixed(2)}%</td>
                     </tr>
                 </tbody>
             </table>

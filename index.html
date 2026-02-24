@@ -46,25 +46,40 @@
 
         <div id="salaryTax" style="display: block;">
             <div class="input-group">
-                <label>月收入 (元)</label>
-                <input type="number" id="monthlyIncome" placeholder="例如: 10000">
-            </div>
-            <div class="input-group">
-                <label>当前月份</label>
-                <select id="currentMonth">
-                    <option value="1">1月</option>
-                    <option value="2">2月</option>
-                    <option value="3">3月</option>
-                    <option value="4">4月</option>
-                    <option value="5">5月</option>
-                    <option value="6">6月</option>
-                    <option value="7">7月</option>
-                    <option value="8">8月</option>
-                    <option value="9">9月</option>
-                    <option value="10">10月</option>
-                    <option value="11">11月</option>
-                    <option value="12">12月</option>
+                <label>计算方式</label>
+                <select id="incomeCalcType" onchange="toggleIncomeCalcType()">
+                    <option value="monthly">按月收入计算</option>
+                    <option value="yearly">按年收入计算</option>
                 </select>
+            </div>
+            <div id="monthlyIncomeInput">
+                <div class="input-group">
+                    <label>月收入 (元)</label>
+                    <input type="number" id="monthlyIncome" placeholder="例如: 10000">
+                </div>
+                <div class="input-group">
+                    <label>当前月份</label>
+                    <select id="currentMonth">
+                        <option value="1">1月</option>
+                        <option value="2">2月</option>
+                        <option value="3">3月</option>
+                        <option value="4">4月</option>
+                        <option value="5">5月</option>
+                        <option value="6">6月</option>
+                        <option value="7">7月</option>
+                        <option value="8">8月</option>
+                        <option value="9">9月</option>
+                        <option value="10">10月</option>
+                        <option value="11">11月</option>
+                        <option value="12">12月</option>
+                    </select>
+                </div>
+            </div>
+            <div id="yearlyIncomeInput" style="display: none;">
+                <div class="input-group">
+                    <label>年收入总额 (元)</label>
+                    <input type="number" id="yearlyIncome" placeholder="例如: 120000">
+                </div>
             </div>
             <div class="deduction-section">
                 <h3>专项附加扣除</h3>
