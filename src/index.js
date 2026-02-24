@@ -30,6 +30,9 @@ export default {
                 return new Response(indexHtml, {
                 headers: {
                     'Content-Type': 'text/html;charset=UTF-8',
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
                 },
             });
         }
@@ -38,6 +41,7 @@ export default {
             return new Response(styleCss, {
                 headers: {
                     'Content-Type': 'text/css',
+                    'Cache-Control': 'public, max-age=86400'
                 },
             });
         }
@@ -46,6 +50,7 @@ export default {
             return new Response(scriptJs, {
                 headers: {
                     'Content-Type': 'application/javascript',
+                    'Cache-Control': 'public, max-age=86400'
                 },
             });
         }
@@ -54,6 +59,7 @@ export default {
                 return new Response(adsTxt, {
                     headers: {
                         'Content-Type': 'text/plain',
+                        'Cache-Control': 'public, max-age=86400'
                     },
                 });
             }
@@ -62,6 +68,7 @@ export default {
                 return new Response(sitemapXml, {
                     headers: {
                         'Content-Type': 'application/xml',
+                        'Cache-Control': 'public, max-age=86400'
                     },
                 });
             }

@@ -2,9 +2,20 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>多功能计算器</title>
     <link rel="stylesheet" href="style.css">
+    <meta name="description" content="多功能计算器 - 提供个税计算、房贷计算、汇率转换、大写数字转换、单位转换、BMI计算器、程序员工具等多种实用工具">
+    <meta name="keywords" content="计算器,个税计算,房贷计算,汇率转换,大写数字,单位转换,BMI计算器,程序员工具">
+    <meta name="author" content="多功能计算器">
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
 </head>
 <body>
 <div class="container">
@@ -21,6 +32,8 @@
         <button class="nav-tab" onclick="showSection('conversions')">单位转换</button>
         <button class="nav-tab" onclick="showSection('advanced')">程序员工具</button>
         <button class="nav-tab" onclick="showSection('bmi')">BMI计算器</button>
+        <button class="nav-tab" onclick="showSection('privacy')">隐私政策</button>
+        <button class="nav-tab" onclick="showSection('terms')">使用条款</button>
         <button class="nav-tab" onclick="showSection('about')">关于</button>
     </div>
 
@@ -1033,11 +1046,112 @@
             </div>
         </div>
     </div>
+
+    <div id="privacy" class="calculator-section">
+        <h2>隐私政策</h2>
+        <div class="about-content">
+            <div class="about-section">
+                <h3>隐私政策</h3>
+                <p>欢迎使用多功能计算器网站（以下简称"本网站"）。我们重视您的隐私，致力于保护您的个人信息。本隐私政策旨在向您说明我们如何收集、使用、存储和保护您的个人信息。</p>
+
+                <h4>1. 信息收集</h4>
+                <p>本网站在使用过程中，不会收集您的个人身份信息。我们可能会收集以下类型的信息：</p>
+                <ul>
+                    <li>您在使用计算器工具时输入的数据（仅用于计算目的，不会存储）</li>
+                    <li>浏览器类型、操作系统、IP地址等技术信息（用于网站分析和优化）</li>
+                    <li>使用情况统计数据（匿名形式，用于改进服务）</li>
+                </ul>
+
+                <h4>2. 信息使用</h4>
+                <p>我们收集的信息仅用于以下目的：</p>
+                <ul>
+                    <li>提供和改进网站功能</li>
+                    <li>分析网站使用情况，优化用户体验</li>
+                    <li>确保网站安全和稳定运行</li>
+                </ul>
+
+                <h4>3. 信息存储与保护</h4>
+                <p>本网站采用以下措施保护您的信息：</p>
+                <ul>
+                    <li>所有计算均在本地浏览器完成，不会将您的输入数据发送到服务器</li>
+                    <li>使用安全的网络连接（HTTPS）</li>
+                    <li>定期更新安全措施，防止未授权访问</li>
+                </ul>
+
+                <h4>4. 第三方服务</h4>
+                <p>本网站可能使用以下第三方服务：</p>
+                <ul>
+                    <li>Google AdSense（广告服务）- 可能会收集使用数据</li>
+                    <li>Google Analytics（网站分析）- 收集匿名使用数据</li>
+                </ul>
+                <p>这些第三方服务可能会使用cookie或其他跟踪技术。您可以通过浏览器设置拒绝cookie，但这可能会影响网站的部分功能。</p>
+
+                <h4>5. 隐私政策更新</h4>
+                <p>我们可能会不时更新本隐私政策。更新后的政策将在本页面发布，我们建议您定期查看。</p>
+
+                <h4>6. 联系我们</h4>
+                <p>如果您对本隐私政策有任何疑问，欢迎通过以下方式联系我们：</p>
+                <p><strong>邮箱：</strong>muchennianying@gmail.com</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="terms" class="calculator-section">
+        <h2>使用条款</h2>
+        <div class="about-content">
+            <div class="about-section">
+            <h3>使用条款</h3>
+            <p>欢迎使用多功能计算器网站（以下简称"本网站"）。本使用条款规定了您使用本网站的权利和义务。通过访问和使用本网站，您同意遵守以下条款。</p>
+
+            <h4>1. 服务内容</h4>
+            <p>本网站提供多种在线计算器工具，包括但不限于：</p>
+            <ul>
+                <li>个税计算器</li>
+                <li>房贷计算器</li>
+                <li>汇率转换</li>
+                <li>大写数字转换</li>
+                <li>单位转换</li>
+                <li>BMI计算器</li>
+                <li>程序员工具</li>
+            </ul>
+
+            <h4>2. 使用限制</h4>
+            <p>您在使用本网站时，不得：</p>
+            <ul>
+                <li>违反任何法律法规</li>
+                <li>侵犯他人的知识产权或其他权利</li>
+                <li>干扰网站的正常运行</li>
+                <li>尝试获取未授权的访问权限</li>
+                <li>使用本网站进行任何非法或不道德的活动</li>
+            </ul>
+
+            <h4>3. 免责声明</h4>
+            <p>本网站提供的所有计算结果仅供参考，不构成任何专业建议。实际结果可能因各种因素而有所不同，请以官方渠道或专业人士的意见为准。</p>
+            <p>本网站不对因使用本站信息而导致的任何直接或间接损失承担责任。</p>
+
+            <h4>4. 知识产权</h4>
+            <p>本网站的所有内容，包括但不限于文本、图像、代码、设计等，均受知识产权法律保护。未经授权，不得复制、修改、分发或使用本网站的任何内容。</p>
+
+            <h4>5. 链接到第三方网站</h4>
+            <p>本网站可能包含指向第三方网站的链接。这些链接仅为方便用户提供，本网站不对这些第三方网站的内容、隐私政策或服务质量负责。</p>
+
+            <h4>6. 使用条款更新</h4>
+            <p>我们可能会不时更新本使用条款。更新后的条款将在本页面发布，我们建议您定期查看。</p>
+
+            <h4>7. 法律适用</h4>
+            <p>本使用条款受中华人民共和国法律管辖。任何与本条款相关的争议，应通过友好协商解决；协商不成的，任何一方均有权向有管辖权的人民法院提起诉讼。</p>
+
+            <h4>8. 联系我们</h4>
+            <p>如果您对本使用条款有任何疑问，欢迎通过以下方式联系我们：</p>
+            <p><strong>邮箱：</strong>muchennianying@gmail.com</p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="footer">
     <p>资源来源于网络，如有侵权，请联系客服予以删除！客服Email: muchennianying@gmail.com</p>
-    <p class="copyright">© 2019 - 2026</p>
+    <p class="copyright">©2026</p>
 </div>
 
 <script src="script.js"></script>
